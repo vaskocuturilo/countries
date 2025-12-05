@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: api-gateway
+
+server:
+  port: ${SERVER_PORT:8091}
+
+
+person:
+  service:
+    url: ${PERSON_SERVICE_URL:http://localhost:8080}
