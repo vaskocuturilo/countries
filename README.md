@@ -9,7 +9,7 @@ https://restcountries.com/v3.1/all?fields=cca2,cca3,capital,region,subregion,are
 
 - Use any *object-oriented language*.
 - Use the latest Spring Boot version.
-- Use the latest PostgreSQL database version.
+- Use the latest PostgresSQL database version.
 - Use the latest MongoDB database version.
 - Use the latest OpenAPI.  
 - Create a REST API service.
@@ -27,7 +27,7 @@ You will need the following technologies available to try it out:
 
 * Git
 * Spring Boot 4+
-* PostgreSQL 17+
+* PostgresSQL 17+
 * MongoDB 7.0+
 * Gradle 9+
 * JDK 24+
