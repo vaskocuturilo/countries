@@ -6,6 +6,6 @@ server:
   port: ${SERVER_PORT:8091}
 
 
-person:
+country:
   service:
-    url: ${PERSON_SERVICE_URL:http://localhost:8080}
+    url: ${COUNTRY_SERVICE_URL:http://localhost:8080}

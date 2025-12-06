@@ -1,0 +1,5 @@
+spring:
+  application:
+     name: api-countries
+server:
+  port: 8080
