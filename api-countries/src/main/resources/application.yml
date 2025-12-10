@@ -1,5 +1,22 @@
-spring:
-  application:
-     name: api-countries
 server:
-  port: 8080
+  port: ${port:8080}
+
+
+spring:
+  datasource:
+    url: ${datasource.url:jdbc:postgresql://localhost:5432/${POSTGRES_DB}}
+    username: ${datasource.username:${POSTGRES_USER}}
+    password: ${datasource.password:${POSTGRES_PASSWORD}}
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+  data:
+    mongodb:
+      host: ${mongo.host:${MONGO_HOST}}
+      port: ${mongo.port:${MONGO_PORT}}
+      database: ${mongo.database:${MONGO_DB}}
+
+
+country:
+  url: ${COUNTRY_URL}
