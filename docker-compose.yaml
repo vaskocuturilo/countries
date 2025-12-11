@@ -17,3 +17,27 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+
+
+  api:
+    build: ./api-countries
+    ports:
+      - "8080:8080"
+    environment:
+      port: "8080"
+      datasource.url: "jdbc:postgresql://postgres/countries"
+      datasource.user: "postgres"
+      datasource.password: "postgres"
+      mongo.host: "mongo"
+      mongo.port: "27017"
+      mongo.database: "mongo"
+
+    depends_on: [ mongo, postgres ]
+
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8091:8091"
+    depends_on: [ api ]
+
+
