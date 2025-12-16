@@ -1,8 +1,7 @@
 package com.example.apicountries.rest;
 
-import com.example.apicountries.client.CountryApiClient;
 import com.example.apicountries.dto.CountryDto;
-import com.example.apicountries.service.CountryService;
+import com.example.apicountries.service.CountryServiceImplementation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +13,9 @@ import java.util.List;
 @RequestMapping("/api/v1/countries")
 public class CountryRestControllerV1 {
 
-    private final CountryApiClient countryApiClient;
+    private final CountryServiceImplementation countryService;
 
-    private final CountryService countryService;
-
-    public CountryRestControllerV1(CountryApiClient countryApiClient, CountryService countryService) {
-        this.countryApiClient = countryApiClient;
+    public CountryRestControllerV1(CountryServiceImplementation countryService) {
         this.countryService = countryService;
     }
 
@@ -39,6 +35,6 @@ public class CountryRestControllerV1 {
 
     @GetMapping
     public ResponseEntity<List<CountryDto>> getCountries() {
-        return ResponseEntity.ok(countryApiClient.getCountries());
+        return ResponseEntity.status(HttpStatus.OK).body(countryService.getAllCountries());
     }
 }
