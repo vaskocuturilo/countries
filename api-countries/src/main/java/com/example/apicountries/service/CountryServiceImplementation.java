@@ -6,11 +6,13 @@ import com.example.apicountries.entity.CountryDocument;
 import com.example.apicountries.entity.CountryEntity;
 import com.example.apicountries.repository.CountryJpaRepository;
 import com.example.apicountries.repository.CountryMongoRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class CountryServiceImplementation implements ICountryService {
@@ -54,5 +56,21 @@ public class CountryServiceImplementation implements ICountryService {
         }
 
         return countryEntities.stream().map(CountryDto::fromJpaEntity).toList();
+    }
+
+    public CountryDto getCountryByAlphaCode(final String alphaCode) {
+        final CountryDocument mongoCountry = countryMongoRepository.findByAlpha2(alphaCode);
+
+        if (Objects.nonNull(mongoCountry)) {
+            return CountryDto.fromMongoDocument(mongoCountry);
+        }
+
+        final CountryEntity jpaCountry = countryJpaRepository.findByAlpha2(alphaCode);
+
+        if (Objects.isNull(jpaCountry)) {
+            throw new EntityNotFoundException("The country with the alphaCode =  %s is not found".formatted(alphaCode));
+        }
+
+        return CountryDto.fromJpaEntity(jpaCountry);
     }
 }
