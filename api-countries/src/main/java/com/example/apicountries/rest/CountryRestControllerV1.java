@@ -28,9 +28,12 @@ public class CountryRestControllerV1 {
                 .body("Init process finished");
     }
 
-    @GetMapping("/{name}")
-    public ResponseEntity<CountryDto> getCountryByName(@PathVariable("name") String name) {
-        return ResponseEntity.ok(new CountryDto());
+    @GetMapping("/{alphaCode}")
+    public ResponseEntity<CountryDto> getCountryByAlphaCode(@PathVariable("alphaCode") String alphaCode) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(countryService.getCountryByAlphaCode(alphaCode));
     }
 
     @GetMapping
