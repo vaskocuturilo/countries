@@ -22,6 +22,7 @@ public class CountryRestControllerV1 {
     @PostMapping("/process")
     public ResponseEntity<String> initProcess() {
         countryService.initProcess();
+
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
