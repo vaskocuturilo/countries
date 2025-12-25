@@ -9,7 +9,7 @@ https://restcountries.com/v3.1/all?fields=cca2,cca3,capital,region,subregion,are
 
 - Use any *object-oriented language*.
 - Use the latest Spring Boot version.
-- Use the latest PostgresSQL database version.
+- Use the latest PostgreSQL database version.
 - Use the latest MongoDB database version.
 - Use the latest OpenAPI.  
 - Create a REST API service.
@@ -38,7 +38,10 @@ You will need the following technologies available to try it out:
 
 ## TO-DO list:
 
-You can see all tasks on the project page: https://github.com/users/vaskocuturilo/projects/4
+This is all the tasks on the project page: https://github.com/users/vaskocuturilo/projects/4
+
+### How it works:
+ API GATEWAY (React WebFlux) -> REST API (/api/v1/countries) -> External REST API (restcountries)
 
 ### How to run via Spring Boot.
 
