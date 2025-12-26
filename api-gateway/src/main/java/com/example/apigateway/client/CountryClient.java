@@ -8,6 +8,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Objects;
@@ -19,19 +21,17 @@ public class CountryClient {
 
     private final RestTemplate restTemplate;
 
+    private final WebClient webClient;
+
     @Value("${country.service.url}")
     private String countryServiceUrl;
 
-    public Object getCountryByName(String name) {
-        ResponseEntity<String> response = restTemplate.exchange(
-                countryServiceUrl + "/api/v1/countries/" + name, HttpMethod.GET, null,
-                new ParameterizedTypeReference<>() {
-                });
-
-        Object body = response.getBody();
-        log.info("IN getPersonByUid - person with uid {} obtained", name);
-
-        return body;
+    public Mono<Object> getCountryByName(String name) {
+        return webClient
+                .get()
+                .uri(countryServiceUrl + "/api/v1/countries/" + name)
+                .retrieve().bodyToMono(Object.class)
+                .doOnNext(body -> log.info("IN getPersonByUid - person with uid {} obtained", name));
     }
 
     public List<Object> getCountries() {

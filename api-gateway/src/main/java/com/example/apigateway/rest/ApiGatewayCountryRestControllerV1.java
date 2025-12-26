@@ -4,6 +4,7 @@ import com.example.apigateway.client.CountryClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -15,10 +16,8 @@ public class ApiGatewayCountryRestControllerV1 {
     private final CountryClient countryClient;
 
     @GetMapping("/{name}")
-    public ResponseEntity<Object> getCountryByName(@PathVariable("name") String name) {
-        final Object personByUid = countryClient.getCountryByName(name);
-
-        return ResponseEntity.ok(personByUid);
+    public Mono<ResponseEntity<Object>> getCountryByName(@PathVariable("name") String name) {
+        return countryClient.getCountryByName(name).map(ResponseEntity::ok);
     }
 
     @GetMapping
