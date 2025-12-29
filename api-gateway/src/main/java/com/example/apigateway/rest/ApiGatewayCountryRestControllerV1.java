@@ -4,9 +4,8 @@ import com.example.apigateway.client.CountryClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,9 +20,8 @@ public class ApiGatewayCountryRestControllerV1 {
     }
 
     @GetMapping
-    public ResponseEntity<List<Object>> getCountries() {
-        final List<Object> persons = countryClient.getCountries();
-        return ResponseEntity.ok(persons);
+    public Flux<Object> getCountries() {
+        return countryClient.getCountries();
     }
 
     @PostMapping("/process")
