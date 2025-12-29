@@ -9,10 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @Component
@@ -31,22 +29,17 @@ public class CountryClient {
                 .get()
                 .uri(countryServiceUrl + "/api/v1/countries/" + name)
                 .retrieve().bodyToMono(Object.class)
-                .doOnNext(body -> log.info("IN getPersonByUid - person with uid {} obtained", name));
+                .doOnNext(body -> log.info("IN getCountryByName - country with name {} and body {}", name, body));
     }
 
-    public List<Object> getCountries() {
-        ResponseEntity<List<Object>> response = restTemplate.exchange(
-                countryServiceUrl + "/api/v1/countries", HttpMethod.GET, null,
-                new ParameterizedTypeReference<>() {
-                });
-
-        final List<Object> body = response.getBody();
-        if (Objects.isNull(body)) {
-            throw new IllegalStateException("The result cannot be null");
-        }
-        log.info("IN getPersons - {} persons", body.size());
-
-        return body;
+    public Flux<Object> getCountries() {
+        return webClient
+                .get()
+                .uri(countryServiceUrl + "/api/v1/countries/")
+                .retrieve().bodyToFlux(Object.class)
+                .switchIfEmpty(Mono.error(new IllegalStateException("The result cannot be null")))
+                .doOnNext(countries -> log.debug("IN getCountries - country received {}", countries))
+                .doOnComplete(() -> log.info("IN getCountries - countries fetched successfully"));
     }
 
     public Object getProcess() {
