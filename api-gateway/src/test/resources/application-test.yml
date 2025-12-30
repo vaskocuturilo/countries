@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: api-gateway
+
+server:
+  port: ${SERVER_PORT:8091}
+
+
+logging:
+  level:
+    org.flywaydb: DEBUG
