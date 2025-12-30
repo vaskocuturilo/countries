@@ -1,5 +1,6 @@
 package com.example.apigateway.client;
 
+import com.example.apigateway.dto.CountryDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,19 +25,19 @@ public class CountryClient {
     @Value("${country.service.url}")
     private String countryServiceUrl;
 
-    public Mono<Object> getCountryByName(String name) {
+    public Mono<CountryDto> getCountryByName(String name) {
         return webClient
                 .get()
                 .uri(countryServiceUrl + "/api/v1/countries/" + name)
-                .retrieve().bodyToMono(Object.class)
+                .retrieve().bodyToMono(CountryDto.class)
                 .doOnNext(body -> log.info("IN getCountryByName - country with name {} and body {}", name, body));
     }
 
-    public Flux<Object> getCountries() {
+    public Flux<CountryDto> getCountries() {
         return webClient
                 .get()
                 .uri(countryServiceUrl + "/api/v1/countries/")
-                .retrieve().bodyToFlux(Object.class)
+                .retrieve().bodyToFlux(CountryDto.class)
                 .switchIfEmpty(Mono.error(new IllegalStateException("The result cannot be null")))
                 .doOnNext(countries -> log.debug("IN getCountries - country received {}", countries))
                 .doOnComplete(() -> log.info("IN getCountries - countries fetched successfully"));
