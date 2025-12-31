@@ -13,6 +13,7 @@ https://restcountries.com/v3.1/all?fields=cca2,cca3,capital,region,subregion,are
 - Use the latest MongoDB database version.
 - Use the latest OpenAPI.  
 - Create a REST API service.
+- Create an API Gateway with Async. 
 - Add observability.
 - Add Docker and Docker Compose. 
 - Add Kubernetes.
@@ -26,7 +27,7 @@ https://restcountries.com/v3.1/all?fields=cca2,cca3,capital,region,subregion,are
 You will need the following technologies available to try it out:
 
 * Git
-* Spring Boot 4+
+* Spring Boot 3+
 * PostgresSQL 17+
 * MongoDB 7.0+
 * Gradle 9+
