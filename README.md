@@ -13,16 +13,13 @@ https://restcountries.com/v3.1/all?fields=cca2,cca3,capital,region,subregion,are
 - Use the latest MongoDB database version.
 - Use the latest OpenAPI.  
 - Create a REST API service.
-- Create an API Gateway with Async. 
-- Add observability.
+- Create an API Gateway with Async.
+- Add Cash (Redis). 
+- Add observability (Prometheus, Grafana, Loki).
 - Add Docker and Docker Compose. 
 - Add Kubernetes.
 - Add unit and integration tests. 
 - Provide code and clear instructions on how to run it.
-
-**Note**: Please put your code in a public repository.
-
-**Note**: Please send a link to this repo when you are done.
 
 You will need the following technologies available to try it out:
 
@@ -35,6 +32,11 @@ You will need the following technologies available to try it out:
 * Docker
 * Docker compose
 * Kubernetes
+* Redis
+* Prometheus
+* Grafana
+* Loki
+* Watchtower
 * IDE of your choice
 
 ## TO-DO list:
