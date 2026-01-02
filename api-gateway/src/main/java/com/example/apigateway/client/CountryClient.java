@@ -30,6 +30,7 @@ public class CountryClient {
                 .get()
                 .uri(countryServiceUrl + "/api/v1/countries/" + name)
                 .retrieve().bodyToMono(CountryDto.class)
+                .switchIfEmpty(Mono.error(new IllegalStateException("The country is not found")))
                 .doOnNext(body -> log.info("IN getCountryByName - country with name {} and body {}", name, body));
     }
 
