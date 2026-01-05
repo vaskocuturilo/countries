@@ -1,9 +1,7 @@
 ## 
 The countries project.
 
-### This project shows how to work with an external API: 
-
-https://restcountries.com/v3.1/all?fields=cca2,cca3,capital,region,subregion,area,population,independent
+### This project has been created to show how to work with an external API. It should contain best practices, microservices patterns, scalability, and failure.  
 
 ## Requirements:
 
@@ -44,7 +42,7 @@ You will need the following technologies available to try it out:
 This is all the tasks on the project page: https://github.com/users/vaskocuturilo/projects/4
 
 ### How it works:
- API GATEWAY (React WebFlux) -> REST API (/api/v1/countries) -> External REST API (restcountries)
+ API GATEWAY (React WebFlux) -> REST API (/api/v1/countries) -> External REST API (Countries: https://restcountries.com/v3.1/all?fields=cca2,cca3,capital,region,subregion,area,population,independent)
 
 ### How to run via Spring Boot.
 
