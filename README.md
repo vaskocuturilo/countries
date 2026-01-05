@@ -1,13 +1,13 @@
 ## 
 The countries project.
 
-### This project has been created to show how to work with an external API. It should contain best practices, microservices patterns, scalability, and failure.  
+### This project has been created to show how to work with an external API. It should contain best practices, microservices patterns, scalability, observability, and failure.  
 
 ## Requirements:
 
 - Use any *object-oriented language*.
 - Use the latest Spring Boot version.
-- Use the latest PostgreSQL database version.
+- Use the latest PostgresSQL database version.
 - Use the latest MongoDB database version.
 - Use the latest OpenAPI.  
 - Create a REST API service.

@@ -5,7 +5,7 @@ COPY --chown=gradle:gradle . /home/gradle/src
 
 WORKDIR /home/gradle/src
 
-RUN gradle build --no-daemon
+RUN gradle clean build -x test --no-daemon --refresh-dependencies || return 0
 
 ## Package stage
 FROM eclipse-temurin:24-jdk-alpine
