@@ -12,6 +12,8 @@ The countries project.
 - Use the latest OpenAPI.  
 - Create a REST API service.
 - Create an API Gateway with Async.
+- Add Apache Kafka.
+- Add Kafka UI.
 - Add Cash (Redis). 
 - Add observability (Prometheus, Grafana, Loki).
 - Add Docker and Docker Compose. 
@@ -27,6 +29,8 @@ You will need the following technologies available to try it out:
 * MongoDB 7.0+
 * Gradle 9+
 * JDK 24+
+* Apache Kafka
+* Kafbat UI (for Apache Kafka)
 * Docker
 * Docker compose
 * Kubernetes
