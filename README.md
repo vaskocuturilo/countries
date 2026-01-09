@@ -18,7 +18,7 @@ The countries project.
 - Add observability (Prometheus, Grafana, Loki).
 - Add Docker and Docker Compose. 
 - Add Kubernetes.
-- Add unit(repositiry, service and rest) and integration tests with testcontainers. 
+- Add unit(repository, service and rest) and integration tests with testcontainers. 
 - Provide code and clear instructions on how to run it.
 
 You will need the following technologies available to try it out:
