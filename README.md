@@ -7,7 +7,7 @@ The countries project.
 
 - Use any *object-oriented language*.
 - Use the latest Spring Boot version.
-- Use the latest PostgresSQL database version.
+- Use the latest PostgreSQL database version.
 - Use the latest MongoDB database version.
 - Use the latest OpenAPI.  
 - Create a REST API service.
@@ -18,7 +18,7 @@ The countries project.
 - Add observability (Prometheus, Grafana, Loki).
 - Add Docker and Docker Compose. 
 - Add Kubernetes.
-- Add unit and integration tests. 
+- Add unit(repositiry, service and rest) and integration tests with testcontainers. 
 - Provide code and clear instructions on how to run it.
 
 You will need the following technologies available to try it out:
