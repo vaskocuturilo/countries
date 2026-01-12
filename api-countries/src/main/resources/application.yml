@@ -1,7 +1,6 @@
 server:
   port: ${port:8080}
 
-
 spring:
   datasource:
     url: ${datasource.url:jdbc:postgresql://localhost:5432/${POSTGRES_DB}}
@@ -17,6 +16,26 @@ spring:
       port: ${mongo.port:${MONGO_PORT}}
       database: ${mongo.database:${MONGO_DB}}
 
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: myGroup
+      auto-offset-reset: earliest
+      key-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.example.apicountries.model
+
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.trusted.packages: com.example.apicountries.model
+
 
 country:
   url: ${COUNTRY_URL}
+
+topic:
+  name: sandbox
