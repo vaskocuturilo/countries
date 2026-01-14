@@ -4,9 +4,11 @@ import com.example.apicountries.client.CountryApiClient;
 import com.example.apicountries.dto.CountryDto;
 import com.example.apicountries.entity.CountryDocument;
 import com.example.apicountries.entity.CountryEntity;
+import com.example.apicountries.kafka.producer.KafkaProducerService;
 import com.example.apicountries.repository.CountryJpaRepository;
 import com.example.apicountries.repository.CountryMongoRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -14,19 +16,22 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+@Slf4j
 @Service
 public class CountryServiceImplementation implements ICountryService {
 
     private final CountryJpaRepository countryJpaRepository;
     private final CountryMongoRepository countryMongoRepository;
     private final CountryApiClient countryApiClient;
+    private final KafkaProducerService kafkaProducerService;
 
     public CountryServiceImplementation(CountryJpaRepository countryJpaRepository,
                                         CountryMongoRepository countryMongoRepository,
-                                        CountryApiClient countryApiClient) {
+                                        CountryApiClient countryApiClient, KafkaProducerService kafkaProducerService) {
         this.countryJpaRepository = countryJpaRepository;
         this.countryMongoRepository = countryMongoRepository;
         this.countryApiClient = countryApiClient;
+        this.kafkaProducerService = kafkaProducerService;
     }
 
     public void initProcess() {
@@ -72,5 +77,12 @@ public class CountryServiceImplementation implements ICountryService {
         }
 
         return CountryDto.fromJpaEntity(jpaCountry);
+    }
+
+    @Override
+    public void triggerAsynchronousSendCountry(CountryDto country) {
+        kafkaProducerService.sendMessage(country);
+
+        log.info("The message {} has been send to the Kafka broker", country);
     }
 }
