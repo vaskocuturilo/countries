@@ -54,6 +54,18 @@ public class CountryClient {
         log.info("IN getProcess - {} ", body);
 
         return body;
+    }
+
+    public Object sendAsyncKafkaMessage() {
+        final ResponseEntity<Void> response = restTemplate.exchange(countryServiceUrl + "/api/v1/countries/send",
+                HttpMethod.POST, null, new ParameterizedTypeReference<>() {
+                });
+
+        final Object body = response.getBody();
+
+        log.info("IN getProcess - {} ", body);
+
+        return body;
 
     }
 }

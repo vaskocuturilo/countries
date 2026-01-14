@@ -31,4 +31,11 @@ public class ApiGatewayCountryRestControllerV1 {
 
         return ResponseEntity.ok(process);
     }
+
+    @PostMapping("/send")
+    public ResponseEntity<Object> sendCountryEntityToKafka() {
+        final Object process = countryClient.sendAsyncKafkaMessage();
+
+        return ResponseEntity.ok(process);
+    }
 }

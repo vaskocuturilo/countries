@@ -8,5 +8,9 @@ public interface ICountryService {
 
     List<CountryDto> getAllCountries();
 
+    CountryDto getCountryByAlphaCode(String alphaCode);
+
+    void triggerAsynchronousSendCountry(CountryDto country);
+
     void initProcess();
 }

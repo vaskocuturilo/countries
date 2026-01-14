@@ -2,6 +2,7 @@ package com.example.apicountries.rest;
 
 import com.example.apicountries.dto.CountryDto;
 import com.example.apicountries.service.CountryServiceImplementation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/countries")
 public class CountryRestControllerV1 {
@@ -40,5 +42,17 @@ public class CountryRestControllerV1 {
     @GetMapping
     public ResponseEntity<List<CountryDto>> getCountries() {
         return ResponseEntity.status(HttpStatus.OK).body(countryService.getAllCountries());
+    }
+
+    @PostMapping("/send")
+    public ResponseEntity<String> triggerAsynchronousPayment(@RequestBody final CountryDto country) {
+        countryService.triggerAsynchronousSendCountry(country);
+
+        log.info("The message {} has been send to the pay system", country);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body("The message to Kafka broker has been send successfully");
     }
 }
