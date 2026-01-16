@@ -1,4 +1,4 @@
-package com.example.apicountries.redis.config;
+package com.example.apicountries.redis.service;
 
 import com.example.apicountries.entity.CountryEntity;
 import lombok.extern.slf4j.Slf4j;
@@ -10,14 +10,14 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class CountryCacheService {
+public class CountryEntityCacheService {
     private final RedisTemplate<String, CountryEntity> redisTemplate;
 
-    public CountryCacheService(RedisTemplate<String, CountryEntity> redisTemplate) {
+    public CountryEntityCacheService(RedisTemplate<String, CountryEntity> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
-    public void cacheCountry(CountryEntity country) {
+    public void cacheCountryEntity(CountryEntity country) {
         final String alpha2 = "alpha2:" + country.getAlpha2();
         final String alpha3 = "alpha3:" + country.getAlpha3();
 
@@ -28,7 +28,7 @@ public class CountryCacheService {
 
     }
 
-    public List<CountryEntity> getCountryByAlpha2Code(String alpha2) {
+    public List<CountryEntity> getCountryEntityByAlpha2Code(String alpha2) {
         String listKey = "alpha2::" + alpha2;
         List<CountryEntity> cachedList = redisTemplate.opsForList().range(listKey, 0, -1);
 

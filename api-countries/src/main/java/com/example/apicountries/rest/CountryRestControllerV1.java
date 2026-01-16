@@ -45,7 +45,7 @@ public class CountryRestControllerV1 {
     }
 
     @PostMapping("/send")
-    public ResponseEntity<String> triggerAsynchronousPayment(@RequestBody final CountryDto country) {
+    public ResponseEntity<String> sendCountryEntityData(@RequestBody final CountryDto country) {
         countryService.triggerAsynchronousSendCountry(country);
 
         log.info("The message {} has been send to the pay system", country);
