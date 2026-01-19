@@ -28,7 +28,7 @@ public class CountryClient {
     public Mono<CountryDto> getCountryByName(String name) {
         return webClient
                 .get()
-                .uri(countryServiceUrl + "/api/v1/countries/" + name)
+                .uri(countryServiceUrl + "/api/v1/countries" + name)
                 .retrieve().bodyToMono(CountryDto.class)
                 .switchIfEmpty(Mono.error(new IllegalStateException("The country is not found")))
                 .doOnNext(body -> log.info("IN getCountryByName - country with name {} and body {}", name, body));
@@ -37,7 +37,7 @@ public class CountryClient {
     public Flux<CountryDto> getCountries() {
         return webClient
                 .get()
-                .uri(countryServiceUrl + "/api/v1/countries/")
+                .uri(countryServiceUrl + "/api/v1/countries")
                 .retrieve().bodyToFlux(CountryDto.class)
                 .switchIfEmpty(Mono.error(new IllegalStateException("The result cannot be null")))
                 .doOnNext(countries -> log.debug("IN getCountries - country received {}", countries))
