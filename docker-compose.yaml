@@ -5,13 +5,17 @@ services:
     ports:
       - "27017:27017"
 
+    environment:
+      MONGO_HOST: ${MONGO_HOST}
+      MONGO_PORT: ${MONGO_PORT}
+      MONGO_DB: ${MONGO_DB}
+
     networks:
       - app-network
 
   postgres:
-    hostname: postgres
-    container_name: postgres_container
-    image: postgres:17-alpine3.19
+    container_name: postgres
+    image: postgres:17
     restart: unless-stopped
     ports:
       - "5432:5432"
@@ -20,6 +24,24 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - ../2. Init Database:/docker-entrypoint-initdb.d
+      - postgres-data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+    logging:
+      #limit logs to 200MB (4 rotations of 50M each)
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "4"
 
     networks:
       - app-network
@@ -53,13 +75,6 @@ services:
     ports:
       - "8080:8080"
     environment:
-      port: "8080"
-      datasource.url: "jdbc:postgresql://postgres/countries"
-      datasource.user: "postgres"
-      datasource.password: "postgres"
-      mongo.host: "mongo"
-      mongo.port: "27017"
-      mongo.database: "mongo"
       log_path: /usr/app/logs/application.log
 
     volumes:
@@ -192,6 +207,7 @@ networks:
   app-network:
 
 volumes:
+  postgres-data:
   redis-insight:
   grafana-data:
   logs:
