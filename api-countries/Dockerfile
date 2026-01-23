@@ -10,16 +10,12 @@ RUN gradle clean build -x test --no-daemon --refresh-dependencies || return 0
 ## Package stage
 FROM openjdk:24-ea-1-jdk-slim
 
-ENV port 8080
-ENV datasource.url 'jdbc:postgresql://postgres/countries'
-ENV datasource.user 'postgres'
-ENV datasource.password 'postgres'
-ENV mongo.host 'mongo'
-ENV mongo.port '27017'
-ENV mongo.database 'mongo'
+ENV ARTIFACT_NAME=api-countries-1.0.0.jar
+
+ENV APP_HOME=/home/gradle/src/
 
 RUN mkdir /app
 
-COPY --from=build /home/gradle/src/build/libs/*.jar /app/api-countries-1.0.0.jar
+COPY --from=build $APP_HOME/build/libs/$ARTIFACT_NAME app.jar
 
-ENTRYPOINT ["java","-jar","/app/api-countries-1.0.0.jar"]
+ENTRYPOINT ["java", "-jar","-Dspring.profiles.active=docker", "/app.jar"]
