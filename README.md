@@ -1,20 +1,20 @@
 ## 
 The demo countries project.
 
-### This project has been created to show how to work with an external API. 
-### It should contain best practices, microservices patterns, scalability, observability, and failure.  
+### This project was created to demonstrate how to work with an external API. 
+It should cover best practices, microservice patterns, scalability, observability, and failure handling.  
 
 ## Requirements:
 
 - Use any *object-oriented language*.
 - Use the latest stable Spring Boot version.
-- Use the latest stable PostgresSQL database version.
+- Use the latest stable PostgreSQL database version.
 - Use the latest stable MongoDB database version.
 - Use the latest OpenAPI.
 
 ### 
 - Create a REST API service.
-- Create an API Gateway with Async approach.
+- Create an API Gateway with an async approach.
 - Add Apache Kafka.
 - Add Kafka UI.
 - Add Cash (Redis). 
