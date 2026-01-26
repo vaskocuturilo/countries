@@ -4,32 +4,40 @@ import com.example.apicountries.dto.CountryDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.KafkaHeaders;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 @Slf4j
 public class KafkaProducerService {
 
-    @Value("${topic.name}")
-    private String topicName;
+    private final String topicName;
 
     private final KafkaTemplate<String, CountryDto> kafkaTemplate;
 
-    public KafkaProducerService(KafkaTemplate<String, CountryDto> kafkaTemplate) {
+    public KafkaProducerService(@Value("${topic.name}") String topicName, KafkaTemplate<String, CountryDto> kafkaTemplate) {
+        this.topicName = topicName;
         this.kafkaTemplate = kafkaTemplate;
     }
 
-
     public void sendMessage(final CountryDto country) {
-        final Message<CountryDto> message = MessageBuilder
-                .withPayload(country)
-                .setHeader(KafkaHeaders.TOPIC, topicName)
-                .build();
+        log.info("Sending country: {} to topic: {}", country, topicName);
 
-        kafkaTemplate.send(message);
+        final String countryAlpha2 = country.getAlpha2();
+
+        log.info("Attempting to send country: {} with key: {}", country.getAlpha2(), countryAlpha2);
+
+        kafkaTemplate.send(topicName, countryAlpha2, country).whenComplete((result, exception) -> {
+            if (Objects.isNull(exception)) {
+                log.info("Successfully sent message to topic {} [partition: {}, offset: {}]",
+                        result.getRecordMetadata().topic(),
+                        result.getRecordMetadata().partition(),
+                        result.getRecordMetadata().offset());
+            } else {
+                log.error("Unable to send message: {} due to : {}", country, exception.getMessage());
+            }
+        });
 
         log.info("The message {} has been send to the topic {}", country, topicName);
     }

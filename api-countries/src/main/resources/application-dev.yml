@@ -17,15 +17,6 @@ spring:
       database: ${mongo.database:${MONGO_DB}}
 
   kafka:
-    consumer:
-      bootstrap-servers: localhost:9092
-      group-id: myGroup
-      auto-offset-reset: earliest
-      key-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring.json.trusted.packages: com.example.apicountries.model
-
     producer:
       bootstrap-servers: localhost:9092
       key-serializer: org.springframework.kafka.support.serializer.JsonSerializer
