@@ -1,0 +1,32 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://postgres/${POSTGRES_DB}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+
+  mongodb:
+    host: ${MONGO_HOST}
+    port: ${MONGO_PORT}
+    database: ${MONGO_DB}
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+
+  kafka:
+    consumer:
+      bootstrap-servers: ${KAFKA_URL}
+      group-id: myGroup
+      auto-offset-reset: earliest
+      key-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.example.apiconsumer
+
+topic:
+  name: sandbox
