@@ -70,7 +70,7 @@ services:
     volumes:
       - redis-insight:/data
 
-  api:
+  api-counties:
     build: ./api-countries
     ports:
       - "8080:8080"
@@ -85,6 +85,51 @@ services:
       MONGO_PORT: ${MONGO_PORT}
       MONGO_DB: ${MONGO_DB}
       COUNTRY_URL: ${COUNTRY_URL}
+
+      KAFKA_URL: ${KAFKA_URL}
+
+      log_path: /usr/app/logs/application.log
+
+    volumes:
+      - logs:/usr/app/logs
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "4"
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+    networks:
+      - app-network
+
+    depends_on:
+      mongo:
+        condition: service_started
+      postgres:
+        condition: service_started
+      redis:
+        condition: service_started
+      redis-insight:
+        condition: service_started
+      broker:
+        condition: service_healthy
+
+  api-consumer:
+    build: ./api-consumer
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: broker:9094
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+      MONGO_HOST: ${MONGO_HOST}
+      MONGO_PORT: ${MONGO_PORT}
+      MONGO_DB: ${MONGO_DB}
+
       KAFKA_URL: ${KAFKA_URL}
 
       log_path: /usr/app/logs/application.log
@@ -126,7 +171,7 @@ services:
     networks:
       - app-network
 
-    depends_on: [ api ]
+    depends_on: [ api-counties ]
 
   grafana:
     image: grafana/grafana
@@ -218,7 +263,7 @@ services:
       - "8092:8080"
     environment:
       - KAFKA_CLUSTERS_0_NAME=local-kafka-cluster
-      - KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS=broker:9092
+      - KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS=broker:9094
       - DYNAMIC_CONFIG_ENABLED=true
 
     networks:

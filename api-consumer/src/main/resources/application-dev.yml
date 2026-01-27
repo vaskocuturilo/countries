@@ -1,0 +1,30 @@
+server:
+  port: ${port:8081}
+
+spring:
+  datasource:
+    url: ${datasource.url:jdbc:postgresql://localhost:5432/${POSTGRES_DB}}
+    username: ${datasource.username:${POSTGRES_USER}}
+    password: ${datasource.password:${POSTGRES_PASSWORD}}
+
+  mongodb:
+    host: ${mongo.host:${MONGO_HOST}}
+    port: ${mongo.port:${MONGO_PORT}}
+    database: ${mongo.database:${MONGO_DB}}
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+  kafka:
+    consumer:
+      bootstrap-servers: broker:9092
+      group-id: myGroup
+      auto-offset-reset: earliest
+      key-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.example.apiconsumer
+
+topic:
+  name: sandbox
