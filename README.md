@@ -14,6 +14,7 @@ It should cover best practices, microservice patterns, scalability, observabilit
 
 ### 
 - Create a REST API service.
+- Create the other REST service with Kafka consumer support.
 - Create an API Gateway with an async approach.
 - Add Apache Kafka.
 - Add Kafka UI.
