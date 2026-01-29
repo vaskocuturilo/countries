@@ -33,17 +33,16 @@ class KafkaProducerServiceTest {
 
     @Test
     void shouldSendMessageSuccessfully() {
-        // Arrange
+        // given
         CountryDto country = DataUtils.getTuvaluDtoPersisted();
 
-
+        // when
         CompletableFuture<SendResult<String, CountryDto>> future = new CompletableFuture<>();
         when(kafkaTemplate.send(anyString(), anyString(), any(CountryDto.class))).thenReturn(future);
 
-
         kafkaProducerService.sendMessage(country);
 
-
+        //then
         verify(kafkaTemplate, times(1)).send(topicName, "TU", country);
     }
 }
