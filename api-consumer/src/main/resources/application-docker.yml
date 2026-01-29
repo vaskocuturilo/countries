@@ -8,10 +8,11 @@ spring:
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
 
-  mongodb:
-    host: ${MONGO_HOST}
-    port: ${MONGO_PORT}
-    database: ${MONGO_DB}
+  data:
+    mongodb:
+      host: ${mongo.host:${MONGO_HOST}}
+      port: ${mongo.port:${MONGO_PORT}}
+      database: ${mongo.database:${MONGO_DB}}
 
   jpa:
     hibernate:
