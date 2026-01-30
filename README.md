@@ -49,8 +49,10 @@ You will need the following technologies available to try it out:
 
 ### How it works:
 
- API GATEWAY (React WebFlux) -> REST API (/api/v1/countries) -> External REST API (Countries: https://restcountries.com/v3.1/all?fields=cca2,cca3,capital,region,subregion,area,population,independent)
-
+ API GATEWAY (React WebFlux) 
+ -> REST API (/api/v1/countries) -> External REST API (Countries: https://restcountries.com/v3.1/all?fields=cca2,cca3,capital,region,subregion,area,population,independent)
+ -> Producer -> Kafka 
+ -> Kafka -> REST API (/api/v1/consumer)
 ### How to run via Spring Boot.
 
 ``` ./gradlew bootRun ```
