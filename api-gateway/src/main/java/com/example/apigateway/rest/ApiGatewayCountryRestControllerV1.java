@@ -1,5 +1,6 @@
 package com.example.apigateway.rest;
 
+import com.example.apigateway.client.ConsumerClient;
 import com.example.apigateway.client.CountryClient;
 import com.example.apigateway.dto.CountryDto;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import reactor.core.publisher.Mono;
 public class ApiGatewayCountryRestControllerV1 {
 
     private final CountryClient countryClient;
+    private final ConsumerClient consumerClient;
 
     @GetMapping("/{name}")
     public Mono<ResponseEntity<CountryDto>> getCountryByName(@PathVariable("name") String name) {
@@ -35,6 +37,13 @@ public class ApiGatewayCountryRestControllerV1 {
     @PostMapping("/send")
     public ResponseEntity<Object> sendCountryEntityToKafka() {
         final Object process = countryClient.sendAsyncKafkaMessage();
+
+        return ResponseEntity.ok(process);
+    }
+
+    @PostMapping("/receive")
+    public ResponseEntity<Object> receiveCountryEntityFromKafka() {
+        final Object process = consumerClient.receiveAsyncKafkaMessage();
 
         return ResponseEntity.ok(process);
     }

@@ -9,3 +9,8 @@ server:
 country:
   service:
     url: ${COUNTRY_SERVICE_URL:http://localhost:8080}
+
+
+consumer:
+  service:
+    url: ${CONSUMER_SERVICE_URL:http://localhost:8081}
