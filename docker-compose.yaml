@@ -70,7 +70,7 @@ services:
     volumes:
       - redis-insight:/data
 
-  api-counties:
+  api-countries:
     build: ./api-countries
     ports:
       - "8080:8080"
@@ -166,11 +166,12 @@ services:
 
     environment:
       COUNTRY_SERVICE_URL: ${COUNTRY_SERVICE_URL}
+      CONSUMER_SERVICE_URL: ${CONSUMER_SERVICE_URL}
 
     networks:
       - app-network
 
-    depends_on: [ api-counties ]
+    depends_on: [ api-countries ]
 
   grafana:
     image: grafana/grafana
