@@ -78,7 +78,7 @@ public class CountryServiceImplementation implements ICountryService {
         if (!cachedDocumentCountries.isEmpty()) {
 
             List<CountryDocument> available = cachedDocumentCountries.stream()
-                    .filter(country -> !alphaCode.contains(country.getAlpha2()))
+                    .filter(country -> country.getAlpha2().equals(alphaCode))
                     .toList();
 
             if (!available.isEmpty()) {
@@ -94,7 +94,7 @@ public class CountryServiceImplementation implements ICountryService {
 
         if (!cachedCountries.isEmpty()) {
             List<CountryEntity> available = cachedCountries.stream()
-                    .filter(country -> !alphaCode.contains(country.getAlpha2()))
+                    .filter(country -> country.getAlpha2().equals(alphaCode))
                     .toList();
 
             if (!available.isEmpty()) {
