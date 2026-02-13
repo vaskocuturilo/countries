@@ -18,6 +18,10 @@ spec:
           env:
             - name: COUNTRY_SERVICE_URL
               value: "http://country-service.default:8080"
+            - name: CONSUMER_SERVICE_URL
+              value: "http://consumer-service.default:8081"
             - name: SERVER_PORT
               value: '8091'
+
+
 
