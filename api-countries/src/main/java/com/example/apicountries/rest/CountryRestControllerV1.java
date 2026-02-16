@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -22,21 +23,13 @@ public class CountryRestControllerV1 {
     }
 
     @PostMapping("/process")
-    public ResponseEntity<String> initProcess() {
-        countryService.initProcess();
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body("Init process finished");
+    public ResponseEntity<Map<String, String>> initProcess() {
+        return ResponseEntity.ok(countryService.initProcess());
     }
 
     @GetMapping("/{alphaCode}")
     public ResponseEntity<CountryDto> getCountryByAlphaCode(@PathVariable("alphaCode") String alphaCode) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(countryService.getCountryByAlphaCode(alphaCode));
+        return ResponseEntity.ok(countryService.getCountryByAlphaCode(alphaCode));
     }
 
     @GetMapping
