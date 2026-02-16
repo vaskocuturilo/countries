@@ -13,6 +13,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -45,7 +47,7 @@ public class CountryClient {
     }
 
     public Object getProcess() {
-        final ResponseEntity<Void> response = restTemplate.exchange(countryServiceUrl + "/api/v1/countries/process",
+        final ResponseEntity<Map<String, String>> response = restTemplate.exchange(countryServiceUrl + "/api/v1/countries/process",
                 HttpMethod.POST, null, new ParameterizedTypeReference<>() {
                 });
 

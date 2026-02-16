@@ -3,6 +3,7 @@ package com.example.apicountries.service;
 import com.example.apicountries.dto.CountryDto;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ICountryService {
 
@@ -12,5 +13,5 @@ public interface ICountryService {
 
     void triggerAsynchronousSendCountry(CountryDto country);
 
-    void initProcess();
+    Map<String, String> initProcess();
 }

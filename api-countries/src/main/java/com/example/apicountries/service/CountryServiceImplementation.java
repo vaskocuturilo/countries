@@ -10,6 +10,7 @@ import com.example.apicountries.redis.service.CountryEntityCacheService;
 import com.example.apicountries.repository.CountryJpaRepository;
 import com.example.apicountries.repository.CountryMongoRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -17,6 +18,7 @@ import org.springframework.util.CollectionUtils;
 import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
@@ -32,6 +34,8 @@ public class CountryServiceImplementation implements ICountryService {
 
     private static final SecureRandom RANDOM = new SecureRandom();
 
+    private static final String MESSAGE_KEY = "message";
+
     public CountryServiceImplementation(CountryJpaRepository countryJpaRepository,
                                         CountryMongoRepository countryMongoRepository,
                                         CountryApiClient countryApiClient, KafkaProducerService kafkaProducerService, CountryEntityCacheService countryEntityCacheService, CountryDocumentCacheService countryDocumentCacheService) {
@@ -43,23 +47,30 @@ public class CountryServiceImplementation implements ICountryService {
         this.countryDocumentCacheService = countryDocumentCacheService;
     }
 
-    public void initProcess() {
-        final List<CountryDto> countryDtoList = countryApiClient.getCountries();
+    @Transactional
+    public Map<String, String> initProcess() {
+        final List<CountryDto> countryDtos = countryApiClient.getCountries();
 
-        final List<CountryEntity> countryEntityList = countryDtoList
-                .stream()
-                .map(CountryDto::toJpaEntity)
-                .toList();
+        if (Objects.isNull(countryDtos) || countryDtos.isEmpty()) {
+            return Map.of(MESSAGE_KEY, "Process aborted: No data received from API");
+        }
 
-        final List<CountryDocument> countryDocumentList = countryDtoList.stream()
+        final List<CountryEntity> countryEntityList = countryDtos.stream().map(CountryDto::toJpaEntity).toList();
+
+        final List<CountryDocument> countryDocumentList = countryDtos.stream()
                 .map(CountryDto::toMongoDocument).toList();
 
+        try {
+            countryJpaRepository.deleteAll();
+            countryJpaRepository.saveAll(countryEntityList);
 
-        countryJpaRepository.deleteAll();
-        countryMongoRepository.deleteAll();
+            countryMongoRepository.deleteAll();
+            countryMongoRepository.saveAll(countryDocumentList);
 
-        countryJpaRepository.saveAll(countryEntityList);
-        countryMongoRepository.saveAll(countryDocumentList);
+            return Map.of(MESSAGE_KEY, "Process completed successfully");
+        } catch (Exception exception) {
+            return Map.of(MESSAGE_KEY, "Process failed during database sync: " + exception.getMessage());
+        }
     }
 
     public List<CountryDto> getAllCountries() {
