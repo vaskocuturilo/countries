@@ -4,12 +4,14 @@ import com.example.apicountries.dto.CountryDto;
 import com.example.apicountries.service.CountryServiceImplementation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 @Slf4j
 @RestController
@@ -39,13 +41,16 @@ public class CountryRestControllerV1 {
 
     @PostMapping("/send")
     public ResponseEntity<String> sendCountryEntityData(@RequestBody final CountryDto country) {
-        countryService.triggerAsynchronousSendCountry(country);
+        try {
+            countryService.triggerSend(country).get(5, TimeUnit.SECONDS);
 
-        log.info("The message {} has been send to the pay system", country);
+            log.info("The message {} has been send to the Kafka", country);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body("The message to Kafka broker has been send successfully");
+            return ResponseEntity.ok().body("Message confirmed by Kafka");
+
+        } catch (ExecutionException | InterruptedException | TimeoutException exception) {
+            Thread.currentThread().interrupt();
+            return ResponseEntity.status(500).body("Kafka failed: " + exception.getMessage());
+        }
     }
 }
