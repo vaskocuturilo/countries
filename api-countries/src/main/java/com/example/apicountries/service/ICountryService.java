@@ -1,9 +1,11 @@
 package com.example.apicountries.service;
 
 import com.example.apicountries.dto.CountryDto;
+import org.springframework.kafka.support.SendResult;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 public interface ICountryService {
 
@@ -11,7 +13,7 @@ public interface ICountryService {
 
     CountryDto getCountryByAlphaCode(String alphaCode);
 
-    void triggerAsynchronousSendCountry(CountryDto country);
+    CompletableFuture<SendResult<String, CountryDto>> triggerSend(CountryDto country);
 
     Map<String, String> initProcess();
 }

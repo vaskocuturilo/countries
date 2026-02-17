@@ -3,34 +3,29 @@ package com.example.apigateway.client;
 import com.example.apigateway.dto.CountryDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.Map;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class CountryClient {
 
-    private final RestTemplate restTemplate;
-
     private final WebClient webClient;
 
-    @Value("${country.service.url}")
-    private String countryServiceUrl;
+    private final DefaultUriBuilderFactory uriFactory;
+
+    private static final String GOAL_ENDPOINT = "/api/v1/countries";
 
     public Mono<CountryDto> getCountryByName(String name) {
         return webClient
                 .get()
-                .uri(countryServiceUrl + "/api/v1/countries" + name)
+                .uri(uriFactory.builder().path(GOAL_ENDPOINT).path(name).build())
                 .retrieve().bodyToMono(CountryDto.class)
                 .switchIfEmpty(Mono.error(new IllegalStateException("The country is not found")))
                 .doOnNext(body -> log.info("IN getCountryByName - country with name {} and body {}", name, body));
@@ -39,35 +34,25 @@ public class CountryClient {
     public Flux<CountryDto> getCountries() {
         return webClient
                 .get()
-                .uri(countryServiceUrl + "/api/v1/countries")
+                .uri(uriFactory.builder().path(GOAL_ENDPOINT).build())
                 .retrieve().bodyToFlux(CountryDto.class)
-                .switchIfEmpty(Mono.error(new IllegalStateException("The result cannot be null")))
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NO_CONTENT)))
                 .doOnNext(countries -> log.debug("IN getCountries - country received {}", countries))
                 .doOnComplete(() -> log.info("IN getCountries - countries fetched successfully"));
     }
 
-    public Object getProcess() {
-        final ResponseEntity<Map<String, String>> response = restTemplate.exchange(countryServiceUrl + "/api/v1/countries/process",
-                HttpMethod.POST, null, new ParameterizedTypeReference<>() {
-                });
-
-        final Object body = response.getBody();
-
-        log.info("IN getProcess - {} ", body);
-
-        return body;
+    public Mono<Object> getProcess() {
+        return webClient.post()
+                .uri(uriFactory.builder().path(GOAL_ENDPOINT).path("/process").build())
+                .retrieve()
+                .bodyToMono(Object.class);
     }
 
-    public Object sendAsyncKafkaMessage() {
-        final ResponseEntity<Void> response = restTemplate.exchange(countryServiceUrl + "/api/v1/countries/send",
-                HttpMethod.POST, null, new ParameterizedTypeReference<>() {
-                });
-
-        final Object body = response.getBody();
-
-        log.info("IN getProcess - {} ", body);
-
-        return body;
-
+    public Mono<Object> sendAsyncKafkaMessage(final CountryDto country) {
+        return webClient.post()
+                .uri(uriFactory.builder().path(GOAL_ENDPOINT).path("/send").build())
+                .bodyValue(country)
+                .retrieve()
+                .bodyToMono(Object.class);
     }
 }

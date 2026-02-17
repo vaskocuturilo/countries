@@ -12,6 +12,7 @@ import com.example.apicountries.repository.CountryMongoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -20,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
@@ -139,9 +141,9 @@ public class CountryServiceImplementation implements ICountryService {
     }
 
     @Override
-    public void triggerAsynchronousSendCountry(CountryDto country) {
-        kafkaProducerService.sendMessage(country);
-
+    public CompletableFuture<SendResult<String, CountryDto>> triggerSend(CountryDto country) {
         log.info("The message {} has been send to the Kafka broker", country);
+
+        return kafkaProducerService.sendMessage(country);
     }
 }
