@@ -2,32 +2,16 @@ server:
   port: 8081
 
 spring:
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://postgres/${POSTGRES_DB}
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
-
-  data:
-    mongodb:
-      host: ${mongo.host:${MONGO_HOST}}
-      port: ${mongo.port:${MONGO_PORT}}
-      database: ${mongo.database:${MONGO_DB}}
-
-  jpa:
-    hibernate:
-      ddl-auto: create
-    show-sql: true
-
   kafka:
     consumer:
       bootstrap-servers: ${KAFKA_URL}
-      group-id: myGroup
+      group-id: myGroup-v2
       auto-offset-reset: earliest
-      key-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       properties:
-        spring.json.trusted.packages: com.example.apiconsumer
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        spring.json.value.default.type: "com.example.apiconsumer.dto.CountryDto"
+        spring.deserializer.value.delegate.spring.json.trusted.packages: com.example.apiconsumer
 
 topic:
   name: sandbox

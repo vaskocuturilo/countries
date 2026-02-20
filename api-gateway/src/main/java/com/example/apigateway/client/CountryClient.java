@@ -22,13 +22,13 @@ public class CountryClient {
 
     private static final String GOAL_ENDPOINT = "/api/v1/countries";
 
-    public Mono<CountryDto> getCountryByName(String name) {
+    public Mono<CountryDto> getCountryByAlphaCode(String alphaCode) {
         return webClient
                 .get()
-                .uri(uriFactory.builder().path(GOAL_ENDPOINT).path(name).build())
+                .uri(uriFactory.builder().path(GOAL_ENDPOINT).path("/" + alphaCode).build())
                 .retrieve().bodyToMono(CountryDto.class)
-                .switchIfEmpty(Mono.error(new IllegalStateException("The country is not found")))
-                .doOnNext(body -> log.info("IN getCountryByName - country with name {} and body {}", name, body));
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NO_CONTENT)))
+                .doOnNext(body -> log.info("IN getCountryByName - country with name {} and body {}", alphaCode, body));
     }
 
     public Flux<CountryDto> getCountries() {

@@ -1,6 +1,7 @@
-package com.example.apiconsumer.kafka.service;
+package com.example.apiconsumer.kafka;
 
-import com.example.apiconsumer.kafka.dto.CountryDto;
+import com.example.apiconsumer.dto.CountryDto;
+import com.example.apiconsumer.kafka.service.KafkaConsumerService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +18,6 @@ import utils.DataUtils;
 import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -51,7 +51,7 @@ class KafkaConsumerServiceTest {
         //when
         await().atMost(5, TimeUnit.SECONDS)
                 .untilAsserted(() -> verify(kafkaConsumerService, times(1))
-                        .consumeMessage(eq(payload), anyInt(), anyLong()));
+                        .receiveNextMessage(topic));
     }
 
     @TestConfiguration

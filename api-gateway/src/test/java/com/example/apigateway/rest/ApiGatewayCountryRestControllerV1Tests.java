@@ -61,7 +61,7 @@ class ApiGatewayCountryRestControllerV1Tests {
         //given
         final CountryDto countryDto = DataUtils.getTuvaluDtoTransient();
 
-        BDDMockito.given(countryClient.getCountryByName(anyString())).willReturn((Mono.just(countryDto)));
+        BDDMockito.given(countryClient.getCountryByAlphaCode(anyString())).willReturn((Mono.just(countryDto)));
 
         //when
         final WebTestClient.ResponseSpec result = webTestClient
@@ -82,7 +82,7 @@ class ApiGatewayCountryRestControllerV1Tests {
     @Description("Test get country by alpha code with incorrect alpha code functionality")
     void givenIncorrectAlphaCode_whenGetCountryByAlphaCode_thenErrorResponse() {
         //given
-        BDDMockito.given(countryClient.getCountryByName(anyString()))
+        BDDMockito.given(countryClient.getCountryByAlphaCode(anyString()))
                 .willReturn(Mono.error(new IllegalStateException("The country is not found")));
 
         //when

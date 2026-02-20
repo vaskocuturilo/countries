@@ -27,7 +27,7 @@ spring:
       key-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
-        spring.json.trusted.packages: com.example.apicountries.model
+        spring.json.add.type.headers: false
 
 
 country:

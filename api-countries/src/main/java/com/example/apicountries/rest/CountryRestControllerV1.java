@@ -40,17 +40,21 @@ public class CountryRestControllerV1 {
     }
 
     @PostMapping("/send")
-    public ResponseEntity<String> sendCountryEntityData(@RequestBody final CountryDto country) {
+    public ResponseEntity<Map<String, String>> sendCountryEntityData(@RequestBody final CountryDto country) {
         try {
             countryService.triggerSend(country).get(5, TimeUnit.SECONDS);
 
             log.info("The message {} has been send to the Kafka", country);
 
-            return ResponseEntity.ok().body("Message confirmed by Kafka");
+            return ResponseEntity.ok().body(Map.of("message", "Message confirmed by Kafka"));
 
         } catch (ExecutionException | InterruptedException | TimeoutException exception) {
-            Thread.currentThread().interrupt();
-            return ResponseEntity.status(500).body("Kafka failed: " + exception.getMessage());
+            log.error("Kafka delivery failed for country: {}", country.getAlpha2(), exception);
+
+            if (exception instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "Kafka failed: " + exception.getMessage()));
         }
     }
 }
