@@ -17,14 +17,14 @@ public class ApiGatewayCountryRestControllerV1 {
     private final CountryClient countryClient;
     private final ConsumerClient consumerClient;
 
-    @GetMapping("/{name}")
-    public Mono<ResponseEntity<CountryDto>> getCountryByName(@PathVariable("name") String name) {
-        return countryClient.getCountryByName(name).map(ResponseEntity::ok);
+    @GetMapping("/{alphaCode}")
+    public Mono<ResponseEntity<CountryDto>> getCountryByName(@PathVariable("alphaCode") String alphaCode) {
+        return countryClient.getCountryByAlphaCode(alphaCode).map(ResponseEntity::ok);
     }
 
     @GetMapping
     public Flux<CountryDto> getCountries() {
-        return countryClient.getCountries();
+        return countryClient.getCountries().flatMap(Mono::just);
     }
 
     @PostMapping("/process")
@@ -35,14 +35,12 @@ public class ApiGatewayCountryRestControllerV1 {
     }
 
     @PostMapping("/send")
-    public ResponseEntity<Object> sendCountryEntityToKafka(@RequestBody final CountryDto country) {
+    public ResponseEntity<Object> sendEntityToKafka(@RequestBody final CountryDto country) {
         return ResponseEntity.ok(countryClient.sendAsyncKafkaMessage(country));
     }
 
-    @PostMapping("/receive")
-    public ResponseEntity<Object> receiveCountryEntityFromKafka() {
-        final Object process = consumerClient.receiveAsyncKafkaMessage();
-
-        return ResponseEntity.ok(process);
+    @GetMapping("/receive")
+    public ResponseEntity<Object> receiveEntityFromKafka() {
+        return ResponseEntity.ok(consumerClient.receiveAsyncKafkaMessage());
     }
 }

@@ -1,23 +1,24 @@
-package com.example.apiconsumer.entity;
+package com.example.apiconsumer.dto;
 
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document
+import java.util.List;
+
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-public class CountryDocument {
+public class CountryDto {
 
-    @Id
+    @JsonProperty("cca2")
     String alpha2;
+    @JsonProperty("cca3")
     String alpha3;
-    String capital;
+    List<String> capital;
     String region;
     String subregion;
     Integer area;

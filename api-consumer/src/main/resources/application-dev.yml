@@ -1,27 +1,17 @@
 server:
-  port: ${port:8081}
-
+  port: 8081
 
 spring:
-  datasource:
-    driverClassName: org.h2.Driver
-    password: password
-    url: jdbc:h2:mem:testdb
-    username: sa
-  h2:
-    console:
-      enabled: true
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
   kafka:
     consumer:
       bootstrap-servers: localhost:9092
-      group-id: myGroup
+      group-id: myGroup-v2
       auto-offset-reset: earliest
-      key-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       properties:
-        spring.json.trusted.packages: com.example.apiconsumer.model
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        spring.json.value.default.type: "com.example.apiconsumer.dto.CountryDto"
+        spring.deserializer.value.delegate.spring.json.trusted.packages: com.example.apiconsumer
 
 topic:
   name: sandbox
