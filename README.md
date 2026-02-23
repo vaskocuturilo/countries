@@ -57,7 +57,7 @@ You will need the following technologies available to try it out:
  -> REST API (/api/v1/countries/?) <-> PostgresSQL \
  -> REST API (/api/v1/countries/?) <-> MongoDB \
  -> Producer -> Kafka \
- -> Kafka <- REST API (/api/v1/consumer) \
+ -> Kafka <- REST API (/api/v1/consumer)
  
 ### How to run via Spring Boot.
 
