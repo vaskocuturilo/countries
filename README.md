@@ -50,14 +50,14 @@ You will need the following technologies available to try it out:
 ### How it works:
 
  API GATEWAY (React WebFlux) 
- -> REST API (/api/v1/process) <-> External REST API (Countries: https://restcountries.com/v3.1/all?fields=cca2,cca3,capital,region,subregion,area,population,independent)
- -> REST API (/api/v1/countries) <-> PostgresSQL
- -> REST API (/api/v1/countries) <-> MongoDB
- -> REST API (/api/v1/countries/?) <-> Redis
- -> REST API (/api/v1/countries/?) <-> PostgresSQL
- -> REST API (/api/v1/countries/?) <-> MongoDB
- -> Producer -> Kafka 
- -> Kafka <- REST API (/api/v1/consumer)
+ -> REST API (/api/v1/process) <-> External REST API (Countries: https://restcountries.com/v3.1/all?fields=cca2,cca3,capital,region,subregion,area,population,independent) \
+ -> REST API (/api/v1/countries) <-> PostgresSQL \
+ -> REST API (/api/v1/countries) <-> MongoDB \
+ -> REST API (/api/v1/countries/?) <-> Redis \
+ -> REST API (/api/v1/countries/?) <-> PostgresSQL \
+ -> REST API (/api/v1/countries/?) <-> MongoDB \
+ -> Producer -> Kafka \
+ -> Kafka <- REST API (/api/v1/consumer) \
  
 ### How to run via Spring Boot.
 
