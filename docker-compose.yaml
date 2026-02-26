@@ -10,6 +10,12 @@ services:
       MONGO_PORT: ${MONGO_PORT}
       MONGO_DB: ${MONGO_DB}
 
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
     networks:
       - app-network
 
@@ -87,6 +93,9 @@ services:
       MONGO_PORT: ${MONGO_PORT}
       MONGO_DB: ${MONGO_DB}
 
+      REDIS_URL: ${REDIS_URL}
+      REDIS_PORT: ${REDIS_PORT}
+
       log_path: /usr/app/logs/application.log
 
     volumes:
@@ -105,9 +114,9 @@ services:
 
     depends_on:
       mongo:
-        condition: service_started
+        condition: service_healthy
       postgres:
-        condition: service_started
+        condition: service_healthy
       redis:
         condition: service_started
       redis-insight:

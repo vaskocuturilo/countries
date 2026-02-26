@@ -1,12 +1,10 @@
 package com.example.apiconsumer.kafka.service;
 
 import com.example.apiconsumer.dto.CountryDto;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +18,6 @@ public class KafkaConsumerService {
 
     private final DefaultKafkaConsumerFactory<String, CountryDto> defaultKafkaConsumerFactory;
 
-    @Value("${time.duration}")
-    private int consumerDuration;
-
     public KafkaConsumerService(DefaultKafkaConsumerFactory<String, CountryDto> defaultKafkaConsumerFactory) {
         this.defaultKafkaConsumerFactory = defaultKafkaConsumerFactory;
     }
@@ -31,7 +26,7 @@ public class KafkaConsumerService {
         try (Consumer<String, CountryDto> consumer = defaultKafkaConsumerFactory.createConsumer()) {
             consumer.subscribe(Collections.singletonList(topic));
 
-            ConsumerRecords<String, CountryDto> records = consumer.poll(Duration.ofSeconds(consumerDuration));
+            ConsumerRecords<String, CountryDto> records = consumer.poll(Duration.ofSeconds(5));
 
             if (Objects.nonNull(records)) {
 

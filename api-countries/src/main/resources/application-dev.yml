@@ -6,15 +6,24 @@ spring:
     url: ${datasource.url:jdbc:postgresql://localhost:5432/${POSTGRES_DB}}
     username: ${datasource.username:${POSTGRES_USER}}
     password: ${datasource.password:${POSTGRES_PASSWORD}}
+  sql:
+    init:
+      mode: always
+      platform: postgresql
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
   data:
     mongodb:
-      host: ${mongo.host:${MONGO_HOST}}
+      host: localhost
       port: ${mongo.port:${MONGO_PORT}}
       database: ${mongo.database:${MONGO_DB}}
+    redis:
+      host:
+        localhost
+      port:
+        6379
 
   kafka:
     producer:
