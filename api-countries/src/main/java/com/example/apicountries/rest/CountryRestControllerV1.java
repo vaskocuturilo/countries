@@ -36,7 +36,7 @@ public class CountryRestControllerV1 {
 
     @GetMapping
     public ResponseEntity<List<CountryDto>> getCountries() {
-        return ResponseEntity.status(HttpStatus.OK).body(countryService.getAllCountries());
+        return ResponseEntity.ok(countryService.getAllCountries());
     }
 
     @PostMapping("/send")
@@ -46,7 +46,7 @@ public class CountryRestControllerV1 {
 
             log.info("The message {} has been send to the Kafka", country);
 
-            return ResponseEntity.ok().body(Map.of("message", "Message confirmed by Kafka"));
+            return ResponseEntity.ok(Map.of("message", "Message confirmed by Kafka"));
 
         } catch (ExecutionException | InterruptedException | TimeoutException exception) {
             log.error("Kafka delivery failed for country: {}", country.getAlpha2(), exception);

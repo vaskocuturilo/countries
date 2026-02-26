@@ -9,18 +9,13 @@ import com.example.apicountries.redis.service.CountryDocumentCacheService;
 import com.example.apicountries.redis.service.CountryEntityCacheService;
 import com.example.apicountries.repository.CountryJpaRepository;
 import com.example.apicountries.repository.CountryMongoRepository;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.security.SecureRandom;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
@@ -33,8 +28,6 @@ public class CountryServiceImplementation implements ICountryService {
     private final KafkaProducerService kafkaProducerService;
     private final CountryEntityCacheService countryEntityCacheService;
     private final CountryDocumentCacheService countryDocumentCacheService;
-
-    private static final SecureRandom RANDOM = new SecureRandom();
 
     private static final String MESSAGE_KEY = "message";
 
@@ -86,58 +79,21 @@ public class CountryServiceImplementation implements ICountryService {
     }
 
     public CountryDto getCountryByAlphaCode(final String alphaCode) {
-        final List<CountryDocument> cachedDocumentCountries = countryDocumentCacheService.getCountryDocumentByAlpha2Code(alphaCode);
+        final String normalized = validateAlphaCode(alphaCode);
 
-        if (!cachedDocumentCountries.isEmpty()) {
+        final CountryDto fromDocumentCache = getFromDocumentCache(normalized);
 
-            List<CountryDocument> available = cachedDocumentCountries.stream()
-                    .filter(country -> country.getAlpha2().equals(alphaCode))
-                    .toList();
+        if (Objects.nonNull(fromDocumentCache)) return fromDocumentCache;
 
-            if (!available.isEmpty()) {
-                final CountryDocument selectedFromCache = available.get(RANDOM.nextInt(available.size()));
+        final CountryDto fromEntityCache = getFromEntityCache(normalized);
 
-                log.info("CountryDocument [{}] fetched from Redis for alphaCode [{}]", selectedFromCache.getAlpha2(), alphaCode);
+        if (Objects.nonNull(fromEntityCache)) return fromEntityCache;
 
-                return CountryDto.fromMongoDocument(selectedFromCache);
-            }
-        }
+        final CountryDto fromMongo = getFromMongo(normalized);
 
-        final List<CountryEntity> cachedCountries = countryEntityCacheService.getCountryEntityByAlpha2Code(alphaCode);
+        if (Objects.nonNull(fromMongo)) return fromMongo;
 
-        if (!cachedCountries.isEmpty()) {
-            List<CountryEntity> available = cachedCountries.stream()
-                    .filter(country -> country.getAlpha2().equals(alphaCode))
-                    .toList();
-
-            if (!available.isEmpty()) {
-                CountryEntity selected = available.get(RANDOM.nextInt(available.size()));
-
-                log.info("CountryEntity [{}] fetched from Redis for alphaCode [{}]", selected.getAlpha2(), alphaCode);
-
-                return CountryDto.fromJpaEntity(selected);
-            }
-        }
-
-        log.info("Fetching country document from DB for level [{}] (cache empty or all questions used)", alphaCode);
-        final CountryDocument mongoCountry = countryMongoRepository.findByAlpha2(alphaCode);
-
-        if (Objects.nonNull(mongoCountry)) {
-            countryDocumentCacheService.cacheCountryDocument(mongoCountry);
-
-            return CountryDto.fromMongoDocument(mongoCountry);
-        }
-
-        log.info("Fetching country entity from DB for level [{}] (cache empty or all questions used)", alphaCode);
-        final CountryEntity dbCountry = countryJpaRepository.findByAlpha2(alphaCode);
-
-        if (Objects.isNull(dbCountry)) {
-            throw new EntityNotFoundException("The country with the alphaCode =  %s is not found".formatted(alphaCode));
-        }
-
-        countryEntityCacheService.cacheCountryEntity(dbCountry);
-
-        return CountryDto.fromJpaEntity(dbCountry);
+        return getFromJpa(normalized);
     }
 
     @Override
@@ -146,4 +102,82 @@ public class CountryServiceImplementation implements ICountryService {
 
         return kafkaProducerService.sendMessage(country);
     }
+
+    private CountryDto getFromDocumentCache(String alphaCode) {
+        List<CountryDocument> docs =
+                countryDocumentCacheService.getCountryDocumentByAlpha2Code(alphaCode);
+
+        if (!docs.isEmpty()) {
+            if (docs.size() > 1) {
+                log.warn("Multiple documents found in cache for alphaCode [{}], using first", alphaCode);
+            }
+
+            CountryDocument selected = docs.getFirst();
+            log.info("CountryDocument [{}] fetched from Redis for alphaCode [{}]",
+                    selected.getAlpha2(), alphaCode);
+
+            return CountryDto.fromMongoDocument(selected);
+        }
+
+        return null;
+    }
+
+    private CountryDto getFromMongo(String alphaCode) {
+        log.info("Fetching country document from DB for alphaCode [{}] (cache miss)", alphaCode);
+
+        final CountryDocument mongoCountry = countryMongoRepository.findByAlpha2(alphaCode);
+
+        if (Objects.nonNull(mongoCountry)) {
+            countryDocumentCacheService.cacheCountryDocument(mongoCountry);
+
+            return CountryDto.fromMongoDocument(mongoCountry);
+        }
+
+        return null;
+    }
+
+    private CountryDto getFromEntityCache(String alphaCode) {
+        List<CountryEntity> entities =
+                countryEntityCacheService.getCountryEntityByAlpha2Code(alphaCode);
+
+        if (!entities.isEmpty()) {
+            if (entities.size() > 1) {
+                log.warn("Multiple entities found in cache for alphaCode [{}], using first", alphaCode);
+            }
+
+            CountryEntity selected = entities.getFirst();
+            log.info("CountryEntity [{}] fetched from Redis for alphaCode [{}]",
+                    selected.getAlpha2(), alphaCode);
+
+            return CountryDto.fromJpaEntity(selected);
+        }
+
+        return null;
+    }
+
+    private CountryDto getFromJpa(String alphaCode) {
+        log.info("Fetching country entity from DB for alphaCode [{}] (cache miss)", alphaCode);
+        final CountryEntity dbCountry = countryJpaRepository.findByAlpha2(alphaCode);
+
+        if (Objects.nonNull(dbCountry)) {
+            countryEntityCacheService.cacheCountryEntity(dbCountry);
+        }
+
+        return CountryDto.fromJpaEntity(dbCountry);
+    }
+
+    private String validateAlphaCode(final String alphaCode) {
+        if (alphaCode == null || alphaCode.isBlank()) {
+            throw new IllegalArgumentException("alphaCode must not be null or blank");
+        }
+
+        final String normalized = alphaCode.trim().toUpperCase(Locale.ROOT);
+
+        if (normalized.length() != 2) {
+            throw new IllegalArgumentException("alphaCode must be ISO-2 code");
+        }
+
+        return normalized;
+    }
+
 }

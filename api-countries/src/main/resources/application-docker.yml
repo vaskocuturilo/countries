@@ -3,23 +3,27 @@ server:
 
 spring:
   datasource:
-    driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://postgres/${POSTGRES_DB}
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
   sql:
     init:
       mode: always
-      platform: mysql
+      platform: postgresql
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
   data:
     mongodb:
       host: ${MONGO_HOST}
       port: ${MONGO_PORT}
       database: ${MONGO_DB}
+    redis:
+      host:
+        ${REDIS_URL}
+      port:
+        ${REDIS_PORT}
 
   kafka:
     producer:
@@ -28,7 +32,6 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         spring.json.add.type.headers: false
-
 
 country:
   url: ${COUNTRY_URL}

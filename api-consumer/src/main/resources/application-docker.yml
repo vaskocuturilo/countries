@@ -15,6 +15,3 @@ spring:
 
 topic:
   name: sandbox
-
-time:
-  duration: 1
