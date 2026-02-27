@@ -50,8 +50,9 @@ class KafkaConsumerServiceTest {
 
         //when
         await().atMost(5, TimeUnit.SECONDS)
-                .untilAsserted(() -> verify(kafkaConsumerService, times(1))
-                        .receiveNextMessage(topic));
+                .untilAsserted(
+                        () -> verify(kafkaConsumerService, times(1))
+                                .receiveNextMessage(topic));
     }
 
     @TestConfiguration
