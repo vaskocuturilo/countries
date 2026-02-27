@@ -57,6 +57,17 @@ jobs:
             sleep 1;
           done
 
+      - name: 🚀 Wait for MongoDB to be ready
+        run: |
+          for i in {1..30}; do
+            if mongosh --eval db.adminCommand('ping')' ; then
+              echo "MongoDB is up!";
+              break;
+            fi
+            echo "Waiting for MongoDB...";
+            sleep 1;
+          done
+
       - name: 👨‍🔧 Setup Java 24
         uses: actions/setup-java@v3
         with:
