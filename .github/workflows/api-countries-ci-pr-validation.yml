@@ -60,7 +60,7 @@ jobs:
       - name: 🚀 Wait for MongoDB to be ready
         run: |
           for i in {1..30}; do
-            if mongosh --eval db.adminCommand('ping')' ; then
+            if mongosh --eval "db.adminCommand('ping'); exit();" ; then
               echo "MongoDB is up!";
               break;
             fi
