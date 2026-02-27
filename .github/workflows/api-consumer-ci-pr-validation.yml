@@ -1,4 +1,4 @@
-name: CI - PR Validation (api-gateway) 👔
+name: CI - PR Validation (api-gateway) 🥈
 on:
   pull_request:
     branches:
