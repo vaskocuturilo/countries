@@ -1,13 +1,14 @@
 spring:
   kafka:
-    bootstrap-servers: localhost:9092
     consumer:
-      group-id: myGroup
+      bootstrap-servers: localhost:9092
+      group-id: myGroup-v2
       auto-offset-reset: earliest
-      key-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       properties:
-        spring.json.trusted.packages: com.example.apiconsumer
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        spring.json.value.default.type: "com.example.apiconsumer.dto.CountryDto"
+        spring.deserializer.value.delegate.spring.json.trusted.packages: com.example.apiconsumer
 
 topic:
   name: sandbox
