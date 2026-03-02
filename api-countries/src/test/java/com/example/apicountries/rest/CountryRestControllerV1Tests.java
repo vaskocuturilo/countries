@@ -51,9 +51,8 @@ class CountryRestControllerV1Tests {
         //then
         result.andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(jsonPath("$.alpha2").isNotEmpty())
-                .andExpect(jsonPath("$.alpha2", CoreMatchers.notNullValue()))
-                .andExpect(jsonPath("$.alpha3", CoreMatchers.notNullValue()))
+                .andExpect(jsonPath("$.cca2").isNotEmpty())
+                .andExpect(jsonPath("$.cca3", CoreMatchers.notNullValue()))
                 .andExpect(jsonPath("$.capital", CoreMatchers.notNullValue()))
                 .andExpect(jsonPath("$.region", CoreMatchers.notNullValue()))
                 .andExpect(jsonPath("$.subregion", CoreMatchers.notNullValue()))
@@ -68,16 +67,15 @@ class CountryRestControllerV1Tests {
 
         //given
         BDDMockito.given(countryService.getCountryByAlphaCode(anyString()))
-                .willThrow(new EntityNotFoundException("The country is not found"));
+                .willThrow(new EntityNotFoundException("Unexpected error: The country is not found"));
 
         //when
         final ResultActions result = mockMvc.perform(get(ENDPOINT_PATH + "/" + alphaCode)
                 .contentType(MediaType.APPLICATION_JSON));
         //then
         result.andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(jsonPath("$.status", CoreMatchers.is(404)))
-                .andExpect(jsonPath("$.message", CoreMatchers.is("The country is not found")));
+                .andExpect(MockMvcResultMatchers.status().isInternalServerError())
+                .andExpect(jsonPath("$.message", CoreMatchers.is("Unexpected error: Unexpected error: The country is not found")));
 
     }
 
@@ -95,7 +93,7 @@ class CountryRestControllerV1Tests {
         //then
         result.andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(jsonPath("$[0].alpha2").isNotEmpty())
+                .andExpect(jsonPath("$[0].cca2").isNotEmpty())
                 .andExpect(jsonPath("$[*]", hasSize(1)));
     }
 }

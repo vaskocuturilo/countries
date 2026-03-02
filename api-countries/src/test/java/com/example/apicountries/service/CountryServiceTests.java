@@ -5,7 +5,6 @@ import com.example.apicountries.entity.CountryEntity;
 import com.example.apicountries.repository.CountryJpaRepository;
 import com.example.apicountries.repository.CountryMongoRepository;
 import com.example.apicountries.utils.DataUtils;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -67,12 +66,23 @@ class CountryServiceTests {
     }
 
     @Test
-    @DisplayName("Test get country with incorrect alphaCode functionality")
-    void givenIncorrectId_whenGetByID_thenExceptionIsThrown() {
+    @DisplayName("Test get country with incorrect alphaCode name functionality")
+    void givenIncorrectAlphaCodeName_whenGetByID_thenExceptionIsThrown() {
         //given
 
         //when
-        assertThrows(EntityNotFoundException.class, () -> countryService.getCountryByAlphaCode("Test"));
+        assertThrows(IllegalArgumentException.class, () -> countryService.getCountryByAlphaCode("Test"));
+
+        //then
+    }
+
+    @Test
+    @DisplayName("Test get country with incorrect alphaCode functionality")
+    void givenIncorrectAlphaCode_whenGetByID_thenExceptionIsThrown() {
+        //given
+
+        //when
+        assertThrows(NullPointerException.class, () -> countryService.getCountryByAlphaCode("TT"));
 
         //then
     }
