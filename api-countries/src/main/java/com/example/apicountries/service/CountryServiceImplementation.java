@@ -33,7 +33,9 @@ public class CountryServiceImplementation implements ICountryService {
 
     public CountryServiceImplementation(CountryJpaRepository countryJpaRepository,
                                         CountryMongoRepository countryMongoRepository,
-                                        CountryApiClient countryApiClient, KafkaProducerService kafkaProducerService, CountryEntityCacheService countryEntityCacheService, CountryDocumentCacheService countryDocumentCacheService) {
+                                        CountryApiClient countryApiClient, KafkaProducerService kafkaProducerService,
+                                        CountryEntityCacheService countryEntityCacheService,
+                                        CountryDocumentCacheService countryDocumentCacheService) {
         this.countryJpaRepository = countryJpaRepository;
         this.countryMongoRepository = countryMongoRepository;
         this.countryApiClient = countryApiClient;
@@ -179,5 +181,4 @@ public class CountryServiceImplementation implements ICountryService {
 
         return normalized;
     }
-
 }

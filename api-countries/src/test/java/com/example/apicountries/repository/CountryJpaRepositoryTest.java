@@ -50,7 +50,7 @@ class CountryJpaRepositoryTest {
     @DisplayName("Test findByAlpha2 country functionality")
     void givenCountryCreated_whenGetByAlpha2_thenCountryIsReturned() {
         //given
-        final CountryEntity countryToCreate = DataUtils.getTuvaluTransient();
+        final CountryEntity countryToCreate = DataUtils.getTuVValueEntityTransient();
 
         countryJpaRepository.save(countryToCreate);
 
@@ -79,7 +79,7 @@ class CountryJpaRepositoryTest {
     @DisplayName("Test the countries find all functionality")
     void givenCountriesAreStored_whenFindAll_thenAllCountriesAreReturned() {
         //given
-        final CountryEntity tuvaluCountry = DataUtils.getTuvaluTransient();
+        final CountryEntity tuvaluCountry = DataUtils.getTuVValueEntityTransient();
 
         countryJpaRepository.saveAll(List.of(tuvaluCountry));
 

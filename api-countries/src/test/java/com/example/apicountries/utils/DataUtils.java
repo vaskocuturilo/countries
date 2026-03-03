@@ -9,7 +9,7 @@ import java.util.List;
 
 public class DataUtils {
 
-    public static CountryEntity getTuvaluTransient() {
+    public static CountryEntity getTuVValueEntityTransient() {
         return CountryEntity
                 .builder()
                 .alpha2("TU")
@@ -18,7 +18,7 @@ public class DataUtils {
                 .build();
     }
 
-    public static CountryDocument getTuvaluMongoTransient() {
+    public static CountryDocument getTuvValueMongoTransient() {
         return CountryDocument
                 .builder()
                 .alpha2("TU")
@@ -27,7 +27,7 @@ public class DataUtils {
                 .build();
     }
 
-    public static CountryEntity getTuvaluPersisted() {
+    public static CountryEntity getTuvValuePersisted() {
         return CountryEntity
                 .builder()
                 .alpha2("TU")
@@ -36,7 +36,7 @@ public class DataUtils {
                 .build();
     }
 
-    public static CountryDto getTuvaluDtoTransient() {
+    public static CountryDto getTuvValueDtoTransient() {
         return CountryDto
                 .builder()
                 .alpha2("TU")
@@ -49,7 +49,7 @@ public class DataUtils {
                 .build();
     }
 
-    public static CountryDto getTuvaluDtoPersisted() {
+    public static CountryDto getTuvValueDtoPersisted() {
         return CountryDto
                 .builder()
                 .alpha2("TU")

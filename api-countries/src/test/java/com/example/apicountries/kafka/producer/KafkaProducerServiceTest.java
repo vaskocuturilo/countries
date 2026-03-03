@@ -34,7 +34,7 @@ class KafkaProducerServiceTest {
     @Test
     void shouldSendMessageSuccessfully() {
         // given
-        CountryDto country = DataUtils.getTuvaluDtoPersisted();
+        CountryDto country = DataUtils.getTuvValueDtoPersisted();
 
         // when
         CompletableFuture<SendResult<String, CountryDto>> future = new CompletableFuture<>();
