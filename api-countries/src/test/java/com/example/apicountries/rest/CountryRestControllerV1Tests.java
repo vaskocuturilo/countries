@@ -42,7 +42,7 @@ class CountryRestControllerV1Tests {
         final String alphaCode = "TU";
 
         //given
-        BDDMockito.given(countryService.getCountryByAlphaCode(anyString())).willReturn(DataUtils.getTuvaluDtoPersisted());
+        BDDMockito.given(countryService.getCountryByAlphaCode(anyString())).willReturn(DataUtils.getTuvValueDtoPersisted());
 
         //when
         final ResultActions result = mockMvc.perform(get(ENDPOINT_PATH + "/" + alphaCode)
@@ -84,7 +84,7 @@ class CountryRestControllerV1Tests {
     void givenOneCountry_whenGetByAllCountries_thenSuccessResponse() throws Exception {
         //given
         BDDMockito.given(countryService.getAllCountries())
-                .willReturn(List.of(DataUtils.getTuvaluDtoPersisted()));
+                .willReturn(List.of(DataUtils.getTuvValueDtoPersisted()));
 
         //when
         final ResultActions result = mockMvc.perform(get(ENDPOINT_PATH)

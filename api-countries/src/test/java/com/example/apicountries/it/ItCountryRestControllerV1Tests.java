@@ -52,9 +52,9 @@ class ItCountryRestControllerV1Tests extends AbstractRestControllerBaseTest {
     @DisplayName("Test get country by alpha code functionality")
     void givenAlphaCode_whenGetByAlphaCode_thenSuccessResponse() throws Exception {
         //given
-        final CountryEntity countryEntity = DataUtils.getTuvaluPersisted();
+        final CountryEntity countryEntity = DataUtils.getTuvValuePersisted();
 
-        final CountryDocument countryDocument = DataUtils.getTuvaluMongoTransient();
+        final CountryDocument countryDocument = DataUtils.getTuvValueMongoTransient();
 
         countryJpaRepository.save(countryEntity);
         countryMongoRepository.save(countryDocument);
@@ -98,8 +98,8 @@ class ItCountryRestControllerV1Tests extends AbstractRestControllerBaseTest {
     @DisplayName("Test get all countries functionality")
     void givenThreeDevelopers_whenGetByAll_thenSuccessResponse() throws Exception {
         //given
-        final CountryEntity countryEntity = DataUtils.getTuvaluPersisted();
-        final CountryDocument countryDocument = DataUtils.getTuvaluMongoTransient();
+        final CountryEntity countryEntity = DataUtils.getTuvValuePersisted();
+        final CountryDocument countryDocument = DataUtils.getTuvValueMongoTransient();
 
         countryJpaRepository.save(countryEntity);
         countryMongoRepository.save(countryDocument);

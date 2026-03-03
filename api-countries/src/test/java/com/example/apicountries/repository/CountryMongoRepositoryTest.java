@@ -47,7 +47,7 @@ class CountryMongoRepositoryTest {
     @DisplayName("Test findByAlpha2 country functionality")
     void givenCountryCreated_whenGetByAlpha2_thenCountryIsReturned() {
         //given
-        final CountryDocument countryToCreate = DataUtils.getTuvaluMongoTransient();
+        final CountryDocument countryToCreate = DataUtils.getTuvValueMongoTransient();
 
         countryMongoRepository.save(countryToCreate);
 
@@ -76,7 +76,7 @@ class CountryMongoRepositoryTest {
     @DisplayName("Test the countries find all functionality")
     void givenCountriesAreStored_whenFindAll_thenAllCountriesAreReturned() {
         //given
-        final CountryDocument tuvaluCountry = DataUtils.getTuvaluMongoTransient();
+        final CountryDocument tuvaluCountry = DataUtils.getTuvValueMongoTransient();
 
         countryMongoRepository.saveAll(List.of(tuvaluCountry));
 
