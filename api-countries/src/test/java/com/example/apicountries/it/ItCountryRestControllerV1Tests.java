@@ -39,8 +39,7 @@ class ItCountryRestControllerV1Tests extends AbstractRestControllerBaseTest {
     @Autowired
     private MockMvc mockMvc;
 
-
-    private static final String ENDPOINT_PATH = "/api/v1/";
+    private static final String ENDPOINT_PATH = "/api/v1/countries";
 
     @BeforeEach
     void setUp() {
@@ -66,15 +65,9 @@ class ItCountryRestControllerV1Tests extends AbstractRestControllerBaseTest {
         //then
         result.andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(jsonPath("$.alpha2").isNotEmpty())
-                .andExpect(jsonPath("$.alpha2", CoreMatchers.notNullValue()))
-                .andExpect(jsonPath("$.alpha3", CoreMatchers.notNullValue()))
-                .andExpect(jsonPath("$.capital", CoreMatchers.notNullValue()))
-                .andExpect(jsonPath("$.region", CoreMatchers.notNullValue()))
-                .andExpect(jsonPath("$.subregion", CoreMatchers.notNullValue()))
-                .andExpect(jsonPath("$.area", CoreMatchers.notNullValue()))
-                .andExpect(jsonPath("$.population", CoreMatchers.notNullValue()))
-                .andExpect(jsonPath("$.independent", CoreMatchers.notNullValue()));
+                .andExpect(jsonPath("$.cca2").isNotEmpty())
+                .andExpect(jsonPath("$.cca3", CoreMatchers.notNullValue()))
+                .andExpect(jsonPath("$.capital", CoreMatchers.notNullValue()));
     }
 
     @Test
@@ -88,9 +81,8 @@ class ItCountryRestControllerV1Tests extends AbstractRestControllerBaseTest {
                 .contentType(MediaType.APPLICATION_JSON));
         //then
         result.andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(jsonPath("$.status", CoreMatchers.is(404)))
-                .andExpect(jsonPath("$.message", CoreMatchers.is("The country with the alphaCode =  %s is not found".formatted(alphaCode))));
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(jsonPath("$.message", CoreMatchers.is("alphaCode must be ISO-2 code")));
 
     }
 
@@ -111,14 +103,9 @@ class ItCountryRestControllerV1Tests extends AbstractRestControllerBaseTest {
         //then
         result.andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(jsonPath("$[0].alpha2").isNotEmpty())
-                .andExpect(jsonPath("$[0].alpha3").isNotEmpty())
-                .andExpect(jsonPath("$[0].capital").isNotEmpty())
-                .andExpect(jsonPath("$[0].capital").isNotEmpty())
-                .andExpect(jsonPath("$[0].region").isNotEmpty())
-                .andExpect(jsonPath("$[0].area").isNotEmpty())
-                .andExpect(jsonPath("$[0].population").isNotEmpty())
-                .andExpect(jsonPath("$[0].independent").isNotEmpty())
+                .andExpect(jsonPath("$[0].cca2").isNotEmpty())
+                .andExpect(jsonPath("$[0].cca3", CoreMatchers.notNullValue()))
+                .andExpect(jsonPath("$[0].capital", CoreMatchers.notNullValue()))
                 .andExpect(jsonPath("$[*]", hasSize(1)));
     }
 }

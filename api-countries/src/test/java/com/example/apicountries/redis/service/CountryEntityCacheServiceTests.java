@@ -51,10 +51,11 @@ class CountryEntityCacheServiceTests {
         cacheService.cacheCountryEntity(countryEntity);
 
         // Assert
-        String alpha2 = "alpha2:";
+        String alpha2 = "alpha2:TU";
+        String alpha3 = "alpha3:TUV";
 
         verify(listOps).rightPush(alpha2, countryEntity);
-        verify(valueOps).set(alpha2, countryEntity);
+        verify(valueOps).set(alpha3, countryEntity);
     }
 
     @Test

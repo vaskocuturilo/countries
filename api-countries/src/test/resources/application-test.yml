@@ -1,5 +1,12 @@
 spring:
+
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     show-sql: true
+
+country:
+  url: https://restcountries.com/v3.1/all?fields=cca2,cca3,capital,region,subregion,area,population,independent
+
+topic:
+  name: sandbox

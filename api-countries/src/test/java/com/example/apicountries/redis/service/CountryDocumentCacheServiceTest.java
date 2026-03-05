@@ -11,6 +11,7 @@ import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -51,10 +52,11 @@ class CountryDocumentCacheServiceTest {
         cacheService.cacheCountryDocument(countryDocument);
 
         // Assert
-        String alpha2 = "alpha2:";
+        String alpha2 = "alpha2:TU";
+        String alpha3 = "alpha3:TUV";
 
         verify(listOps).rightPush(alpha2, countryDocument);
-        verify(valueOps).set(alpha2, countryDocument);
+        verify(valueOps).set(alpha3, countryDocument);
     }
 
     @Test
@@ -79,13 +81,19 @@ class CountryDocumentCacheServiceTest {
 
     @Test
     void shouldReturnEmptyListWhenCacheIsEmpty() {
-        // Arrange
-        when(listOps.range("alpha2:WWWWWW", 0, -1)).thenReturn(null);
+        when(listOps.range("alpha2:XX", 0, -1)).thenReturn(null);
 
-        // Act
-        List<CountryDocument> result = cacheService.getCountryDocumentByAlpha2Code("WWWWWW");
+        List<CountryDocument> result = cacheService.getCountryDocumentByAlpha2Code("XX");
 
-        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenCacheReturnsEmptyList() {
+        when(listOps.range("alpha2:XX", 0, -1)).thenReturn(Collections.emptyList());
+
+        List<CountryDocument> result = cacheService.getCountryDocumentByAlpha2Code("XX");
+
         assertTrue(result.isEmpty());
     }
 }
