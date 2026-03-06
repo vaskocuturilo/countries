@@ -36,6 +36,15 @@ public class DataUtils {
                 .build();
     }
 
+    public static CountryEntity getZimbabwePersisted() {
+        return CountryEntity
+                .builder()
+                .alpha2("ZM")
+                .alpha3("ZIM")
+                .capital("Zimbabwe")
+                .build();
+    }
+
     public static CountryDto getTuvValueDtoTransient() {
         return CountryDto
                 .builder()
