@@ -6,6 +6,8 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.kafka.KafkaContainer;
+import org.testcontainers.utility.DockerImageName;
 
 public abstract class AbstractRestControllerBaseTest {
 
@@ -18,6 +20,9 @@ public abstract class AbstractRestControllerBaseTest {
     @Container
     static final GenericContainer<?> REDIS_CONTAINER;
 
+    @Container
+    static final KafkaContainer KAFKA_CONTAINER;
+
     static {
         POSTGRES_SQL_CONTAINER = new PostgreSQLContainer("postgres:latest")
                 .withUsername("postgres")
@@ -29,9 +34,12 @@ public abstract class AbstractRestControllerBaseTest {
         REDIS_CONTAINER = new GenericContainer<>("redis:latest")
                 .withExposedPorts(6379);
 
+        KAFKA_CONTAINER = new KafkaContainer(DockerImageName.parse("apache/kafka"));
+
         POSTGRES_SQL_CONTAINER.start();
         MONGO_DB_CONTAINER.start();
         REDIS_CONTAINER.start();
+        KAFKA_CONTAINER.start();
     }
 
     @DynamicPropertySource
@@ -46,5 +54,8 @@ public abstract class AbstractRestControllerBaseTest {
 
         registry.add("spring.data.redis.host", REDIS_CONTAINER::getHost);
         registry.add("spring.data.redis.port", REDIS_CONTAINER::getFirstMappedPort);
+
+        registry.add("spring.kafka.producer.bootstrap-servers", KAFKA_CONTAINER::getBootstrapServers);
+        registry.add("KAFKA_URL", KAFKA_CONTAINER::getBootstrapServers);
     }
 }
