@@ -9,9 +9,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/gateway")
 public class ApiGatewayRestControllerV1 {
 
+    private final ApplicationShutdownManager applicationShutdownManager;
+
+    public ApiGatewayRestControllerV1(ApplicationShutdownManager applicationShutdownManager) {
+        this.applicationShutdownManager = applicationShutdownManager;
+    }
+
     @PostMapping("/exit")
     public ResponseEntity<?> exit() {
-        System.exit(1);
+        applicationShutdownManager.shutDown();
+
         return ResponseEntity.ok().build();
     }
 }
