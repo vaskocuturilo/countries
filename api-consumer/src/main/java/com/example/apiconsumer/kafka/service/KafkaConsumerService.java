@@ -28,7 +28,7 @@ public class KafkaConsumerService {
 
             ConsumerRecords<String, CountryDto> records = consumer.poll(Duration.ofSeconds(5));
 
-            if (Objects.nonNull(records)) {
+            if (Objects.nonNull(records) && !records.isEmpty()) {
 
                 ConsumerRecord<String, CountryDto> receive = records.iterator().next();
 
@@ -38,8 +38,9 @@ public class KafkaConsumerService {
 
                 return receive.value();
             }
+        } catch (Exception exception) {
+            log.info("IN receiveNextMessage:  The message from Kafka has not been received, return null", exception);
         }
-        log.info("IN receiveNextMessage:  The message from Kafka has not been received, return null");
 
         return null;
     }
