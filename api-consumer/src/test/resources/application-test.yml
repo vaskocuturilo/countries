@@ -10,5 +10,12 @@ spring:
         spring.json.value.default.type: "com.example.apiconsumer.dto.CountryDto"
         spring.deserializer.value.delegate.spring.json.trusted.packages: com.example.apiconsumer
 
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+
 topic:
   name: sandbox
