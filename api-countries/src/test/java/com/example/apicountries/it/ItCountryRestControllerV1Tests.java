@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -31,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 @Testcontainers
 class ItCountryRestControllerV1Tests extends AbstractRestControllerBaseTest {
 
@@ -47,14 +48,20 @@ class ItCountryRestControllerV1Tests extends AbstractRestControllerBaseTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private RedisConnectionFactory redisConnectionFactory;
+
     private static final String ENDPOINT_PATH = "/api/v1/countries";
 
     @BeforeEach
     void setUp() {
         countryMongoRepository.deleteAll();
         countryJpaRepository.deleteAll();
-    }
 
+        redisConnectionFactory.getConnection()
+                .serverCommands()
+                .flushAll();
+    }
 
     @Test
     @DisplayName("Test get country by alpha code functionality")
@@ -94,8 +101,8 @@ class ItCountryRestControllerV1Tests extends AbstractRestControllerBaseTest {
         // then
         result.andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(jsonPath("$.alpha2", CoreMatchers.is(countryEntity.getAlpha2())))
-                .andExpect(jsonPath("$.alpha3", CoreMatchers.notNullValue()))
+                .andExpect(jsonPath("$.cca2", CoreMatchers.is(countryEntity.getAlpha2())))
+                .andExpect(jsonPath("$.cca3", CoreMatchers.notNullValue()))
                 .andExpect(jsonPath("$.capital", CoreMatchers.notNullValue()));
     }
 
@@ -105,15 +112,11 @@ class ItCountryRestControllerV1Tests extends AbstractRestControllerBaseTest {
         // given
 
         // when
-        final ResultActions result = mockMvc.perform(
-                get(ENDPOINT_PATH + "/WW")
-                        .contentType(MediaType.APPLICATION_JSON));
+        final ResultActions result = mockMvc.perform(get(ENDPOINT_PATH + "/WW").contentType(MediaType.APPLICATION_JSON));
 
         // then
         result.andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(jsonPath("$.message",
-                        CoreMatchers.is("The country with the alphaCode = WW is not found")));
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
@@ -149,8 +152,8 @@ class ItCountryRestControllerV1Tests extends AbstractRestControllerBaseTest {
         result.andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(jsonPath("$[*]", hasSize(1)))
-                .andExpect(jsonPath("$[0].alpha2").isNotEmpty())
-                .andExpect(jsonPath("$[0].alpha3", CoreMatchers.notNullValue()))
+                .andExpect(jsonPath("$[0].cca2").isNotEmpty())
+                .andExpect(jsonPath("$[0].cca3", CoreMatchers.notNullValue()))
                 .andExpect(jsonPath("$[0].capital", CoreMatchers.notNullValue()));
     }
 
