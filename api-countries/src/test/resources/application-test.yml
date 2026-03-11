@@ -5,6 +5,14 @@ spring:
       ddl-auto: create-drop
     show-sql: true
 
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+
 country:
   url: https://restcountries.com/v3.1/all?fields=cca2,cca3,capital,region,subregion,area,population,independent
 
