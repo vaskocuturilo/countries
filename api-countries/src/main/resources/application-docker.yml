@@ -27,11 +27,15 @@ spring:
 
   kafka:
     producer:
+      acks: all
       bootstrap-servers: ${KAFKA_URL}
       key-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         spring.json.add.type.headers: false
+        enable.idempotence: true
+        retries: 2147483647
+        delivery.timeout.ms: 120000
 
 country:
   url: ${COUNTRY_URL}
