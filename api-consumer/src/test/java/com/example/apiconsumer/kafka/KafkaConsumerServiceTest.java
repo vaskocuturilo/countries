@@ -56,7 +56,7 @@ class KafkaConsumerServiceTest {
         // then - explicitly call receiveNextMessage and verify the result
         await().atMost(5, TimeUnit.SECONDS)
                 .untilAsserted(() -> {
-                    CountryDto result = kafkaConsumerService.receiveNextMessage(topic); // ✅ call it
+                    CountryDto result = kafkaConsumerService.receiveNextMessage(topic);
 
                     assertThat(result).isNotNull();
                     assertThat(result.getAlpha2()).isEqualTo(payload.getAlpha2());
