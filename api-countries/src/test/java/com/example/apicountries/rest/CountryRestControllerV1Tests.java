@@ -1,5 +1,6 @@
 package com.example.apicountries.rest;
 
+import com.example.apicountries.config.SecurityConfig;
 import com.example.apicountries.dto.CountryDto;
 import com.example.apicountries.service.CountryServiceImplementation;
 import com.example.apicountries.utils.DataUtils;
@@ -10,9 +11,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.support.SendResult;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -35,6 +39,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(CountryRestControllerV1.class)
+@ActiveProfiles("test")
+@Import(SecurityConfig.class)
 class CountryRestControllerV1Tests {
 
     @MockitoBean
@@ -48,6 +54,12 @@ class CountryRestControllerV1Tests {
 
     private static final String ENDPOINT_PATH = "/api/v1/countries";
 
+    @Value("${http.auth-token-header-name}")
+    private String headerName;
+
+    @Value("${http.auth-token}")
+    private String authToken;
+
     @Test
     @DisplayName("Test get country by alpha code functionality")
     void givenAlphaCode_whenGetByAlphaCode_thenSuccessResponse() throws Exception {
@@ -58,7 +70,7 @@ class CountryRestControllerV1Tests {
 
         //when
         final ResultActions result = mockMvc.perform(get(ENDPOINT_PATH + "/" + alphaCode)
-                .contentType(MediaType.APPLICATION_JSON));
+                .contentType(MediaType.APPLICATION_JSON).header(headerName, authToken));
 
         //then
         result.andDo(MockMvcResultHandlers.print())
@@ -83,7 +95,7 @@ class CountryRestControllerV1Tests {
 
         //when
         final ResultActions result = mockMvc.perform(get(ENDPOINT_PATH + "/" + alphaCode)
-                .contentType(MediaType.APPLICATION_JSON));
+                .contentType(MediaType.APPLICATION_JSON).header(headerName, authToken));
         //then
         result.andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isInternalServerError())
@@ -100,7 +112,7 @@ class CountryRestControllerV1Tests {
 
         //when
         final ResultActions result = mockMvc.perform(get(ENDPOINT_PATH + "/WWWWWW")
-                .contentType(MediaType.APPLICATION_JSON));
+                .contentType(MediaType.APPLICATION_JSON).header(headerName, authToken));
 
         //then
         result.andDo(MockMvcResultHandlers.print())
@@ -117,7 +129,7 @@ class CountryRestControllerV1Tests {
 
         //when
         final ResultActions result = mockMvc.perform(get(ENDPOINT_PATH)
-                .contentType(MediaType.APPLICATION_JSON));
+                .contentType(MediaType.APPLICATION_JSON).header(headerName, authToken));
 
         //then
         result.andDo(MockMvcResultHandlers.print())
@@ -133,7 +145,8 @@ class CountryRestControllerV1Tests {
         BDDMockito.given(countryService.getAllCountries()).willReturn(Collections.emptyList());
 
         //when
-        final ResultActions result = mockMvc.perform(get(ENDPOINT_PATH).contentType(MediaType.APPLICATION_JSON));
+        final ResultActions result = mockMvc.perform(get(ENDPOINT_PATH)
+                .contentType(MediaType.APPLICATION_JSON).header(headerName, authToken));
 
         //then
         result.andDo(MockMvcResultHandlers.print())
@@ -148,7 +161,8 @@ class CountryRestControllerV1Tests {
         BDDMockito.given(countryService.initProcess()).willReturn(Map.of("message", "Process completed successfully"));
 
         //when
-        final ResultActions result = mockMvc.perform(post(ENDPOINT_PATH + "/process").contentType(MediaType.APPLICATION_JSON));
+        final ResultActions result = mockMvc.perform(post(ENDPOINT_PATH + "/process")
+                .contentType(MediaType.APPLICATION_JSON).header(headerName, authToken));
 
         //then
         result.andDo(MockMvcResultHandlers.print())
@@ -163,7 +177,8 @@ class CountryRestControllerV1Tests {
         BDDMockito.given(countryService.initProcess()).willReturn(Map.of("message", "Process aborted: No data received from API"));
 
         //when
-        final ResultActions result = mockMvc.perform(post(ENDPOINT_PATH + "/process").contentType(MediaType.APPLICATION_JSON));
+        final ResultActions result = mockMvc.perform(post(ENDPOINT_PATH + "/process")
+                .contentType(MediaType.APPLICATION_JSON).header(headerName, authToken));
 
         //then
         result.andDo(MockMvcResultHandlers.print())
@@ -182,6 +197,7 @@ class CountryRestControllerV1Tests {
 
         mockMvc.perform(post(ENDPOINT_PATH + "/send")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header(headerName, authToken)
                         .content(objectMapper.writeValueAsString(country)))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
@@ -200,6 +216,7 @@ class CountryRestControllerV1Tests {
 
         mockMvc.perform(post(ENDPOINT_PATH + "/send")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header(headerName, authToken)
                         .content(objectMapper.writeValueAsString(country)))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isInternalServerError())
