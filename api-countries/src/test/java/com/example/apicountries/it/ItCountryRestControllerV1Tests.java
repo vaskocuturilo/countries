@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -53,6 +54,12 @@ class ItCountryRestControllerV1Tests extends AbstractRestControllerBaseTest {
 
     private static final String ENDPOINT_PATH = "/api/v1/countries";
 
+    @Value("${http.auth-token-header-name}")
+    private String headerName;
+
+    @Value("${http.auth-token}")
+    private String authToken;
+
     @BeforeEach
     void setUp() {
         countryMongoRepository.deleteAll();
@@ -76,7 +83,7 @@ class ItCountryRestControllerV1Tests extends AbstractRestControllerBaseTest {
 
         //when
         final ResultActions result = mockMvc.perform(get(ENDPOINT_PATH + "/" + countryDocument.getAlpha2())
-                .contentType(MediaType.APPLICATION_JSON));
+                .contentType(MediaType.APPLICATION_JSON).header(headerName, authToken));
 
         //then
         result.andDo(MockMvcResultHandlers.print())
@@ -96,7 +103,7 @@ class ItCountryRestControllerV1Tests extends AbstractRestControllerBaseTest {
         // when
         final ResultActions result = mockMvc.perform(
                 get(ENDPOINT_PATH + "/" + countryEntity.getAlpha2())
-                        .contentType(MediaType.APPLICATION_JSON));
+                        .contentType(MediaType.APPLICATION_JSON).header(headerName, authToken));
 
         // then
         result.andDo(MockMvcResultHandlers.print())
@@ -112,7 +119,7 @@ class ItCountryRestControllerV1Tests extends AbstractRestControllerBaseTest {
         // given
 
         // when
-        final ResultActions result = mockMvc.perform(get(ENDPOINT_PATH + "/WW").contentType(MediaType.APPLICATION_JSON));
+        final ResultActions result = mockMvc.perform(get(ENDPOINT_PATH + "/WW").contentType(MediaType.APPLICATION_JSON).header(headerName, authToken));
 
         // then
         result.andDo(MockMvcResultHandlers.print())
@@ -127,7 +134,7 @@ class ItCountryRestControllerV1Tests extends AbstractRestControllerBaseTest {
         // when
         final ResultActions result = mockMvc.perform(
                 get(ENDPOINT_PATH + "/TEST")
-                        .contentType(MediaType.APPLICATION_JSON));
+                        .contentType(MediaType.APPLICATION_JSON).header(headerName, authToken));
 
         // then
         result.andDo(MockMvcResultHandlers.print())
@@ -146,7 +153,7 @@ class ItCountryRestControllerV1Tests extends AbstractRestControllerBaseTest {
         // when
         final ResultActions result = mockMvc.perform(
                 get(ENDPOINT_PATH)
-                        .contentType(MediaType.APPLICATION_JSON));
+                        .contentType(MediaType.APPLICATION_JSON).header(headerName, authToken));
 
         // then
         result.andDo(MockMvcResultHandlers.print())
@@ -165,7 +172,7 @@ class ItCountryRestControllerV1Tests extends AbstractRestControllerBaseTest {
         // when
         final ResultActions result = mockMvc.perform(
                 get(ENDPOINT_PATH)
-                        .contentType(MediaType.APPLICATION_JSON));
+                        .contentType(MediaType.APPLICATION_JSON).header(headerName, authToken));
 
         // then
         result.andDo(MockMvcResultHandlers.print())
@@ -185,7 +192,7 @@ class ItCountryRestControllerV1Tests extends AbstractRestControllerBaseTest {
         // when
         final ResultActions result = mockMvc.perform(
                 get(ENDPOINT_PATH)
-                        .contentType(MediaType.APPLICATION_JSON));
+                        .contentType(MediaType.APPLICATION_JSON).header(headerName, authToken));
 
         // then
         result.andDo(MockMvcResultHandlers.print())
@@ -201,7 +208,7 @@ class ItCountryRestControllerV1Tests extends AbstractRestControllerBaseTest {
         // when
         final ResultActions result = mockMvc.perform(
                 post(ENDPOINT_PATH + "/process")
-                        .contentType(MediaType.APPLICATION_JSON));
+                        .contentType(MediaType.APPLICATION_JSON).header(headerName, authToken));
 
         // then
         result.andDo(MockMvcResultHandlers.print())
@@ -218,7 +225,7 @@ class ItCountryRestControllerV1Tests extends AbstractRestControllerBaseTest {
         // when
         final ResultActions result = mockMvc.perform(
                 post(ENDPOINT_PATH + "/send")
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON).header(headerName, authToken)
                         .content(objectMapper.writeValueAsString(country)));
 
         // then
