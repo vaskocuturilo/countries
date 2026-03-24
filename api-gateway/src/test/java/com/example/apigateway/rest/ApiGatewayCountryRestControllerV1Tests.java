@@ -43,7 +43,7 @@ class ApiGatewayCountryRestControllerV1Tests {
     @DisplayName("Test get all countries functionality")
     void givenCountry_whenGetCountries_thenSuccessResponse() {
         //given
-        final CountryDto countryDto = DataUtils.getTuvaluDtoPersisted();
+        final CountryDto countryDto = DataUtils.simpleCountryBuilder();
 
         BDDMockito.given(countryClient.getCountries()).willReturn((Flux.just(countryDto)));
 
@@ -70,7 +70,7 @@ class ApiGatewayCountryRestControllerV1Tests {
     @DisplayName("Test get country by alpha code functionality")
     void givenName_whenGetCountryByAlphaCode_thenSuccessResponse() {
         //given
-        final CountryDto countryDto = DataUtils.getTuvaluDtoTransient();
+        final CountryDto countryDto = DataUtils.simpleCountryBuilder();
 
         BDDMockito.given(countryClient.getCountryByAlphaCode(anyString())).willReturn((Mono.just(countryDto)));
 
@@ -148,7 +148,7 @@ class ApiGatewayCountryRestControllerV1Tests {
     @DisplayName("Test send country to Kafka - success")
     void givenCountryDto_whenSendToKafka_thenSuccessResponse() {
         // given
-        final CountryDto country = DataUtils.getTuvaluDtoPersisted();
+        final CountryDto country = DataUtils.simpleCountryBuilder();
 
         BDDMockito.given(countryClient.sendAsyncKafkaMessage(any()))
                 .willReturn(Mono.just(Map.of("message", "Message confirmed by Kafka")));

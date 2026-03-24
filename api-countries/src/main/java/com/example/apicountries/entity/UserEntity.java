@@ -6,14 +6,16 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
-@NoArgsConstructor
 @Data
 @Entity
 @Table(name = "user_entity")
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserEntity {
     @Id
     @Column(name = "id", updatable = false, nullable = false)
