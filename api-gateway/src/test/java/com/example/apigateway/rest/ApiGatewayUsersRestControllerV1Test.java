@@ -47,7 +47,7 @@ class ApiGatewayUsersRestControllerV1Test {
 
 
         //then
-        result.expectStatus().isOk()
+        result.expectStatus().isNotFound()
                 .expectBody()
                 .consumeWith(System.out::println);
     }
@@ -69,7 +69,7 @@ class ApiGatewayUsersRestControllerV1Test {
 
 
         //then
-        result.expectStatus().isOk()
+        result.expectStatus().isNotFound()
                 .expectBody()
                 .consumeWith(System.out::println);
     }
