@@ -1,4 +1,4 @@
-##  
+##   
 
 The demo countries project.
 
@@ -14,7 +14,7 @@ It should cover best practices, microservice patterns, scalability, observabilit
 - Use the latest stable MongoDB database version.
 - Use the latest OpenAPI.
 
-###  
+###   
 
 - Create a REST API service.
 - Create the other REST service with Kafka consumer support.
@@ -44,6 +44,8 @@ You will need the following technologies available to try it out:
 * Prometheus
 * Grafana
 * Loki
+* Alloy
+* Tempo
 * Watchtower
 * IDE of your choice
 
