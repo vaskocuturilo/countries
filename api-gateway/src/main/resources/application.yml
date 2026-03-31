@@ -13,4 +13,4 @@ country:
 
 consumer:
   service:
-    url: ${CONSUMER_SERVICE_URL:http://localhost:8081}
+    url: ${CONSUMER_SERVICE_URL:http://localhost:8082}
