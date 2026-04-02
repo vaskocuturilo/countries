@@ -78,12 +78,6 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
-      - name: 🧳 Set environment variables
-        run: |
-          echo "NEXUS_URL=${{ secrets.NEXUS_URL }}" >> .env
-          echo "NEXUS_USER=${{ secrets.NEXUS_USER }}" >> .env
-          echo "NEXUS_PASSWORD=${{ secrets.NEXUS_PASSWORD }}" >> .env
-
       - name: 🚀 Build and Test Backend
         env:
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
@@ -93,5 +87,9 @@ jobs:
           MONGO_HOST: ${{ secrets.MONGO_HOST }}
           MONGO_PORT: ${{ secrets.MONGO_PORT }}
           MONGO_DB: ${{ secrets.MONGO_DB }}
+
+          NEXUS_URL: ${{ secrets.NEXUS_URL }}
+          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
 
         run: gradle clean build test
