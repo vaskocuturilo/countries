@@ -27,7 +27,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${openapi}"
-    implementation 'io.swagger.core.v3:swagger-annotations'
+    implementation "io.swagger.core.v3:swagger-annotations:${swaggerAnnotation}"
     implementation 'org.springframework.kafka:spring-kafka'
     implementation "com.auth0:java-jwt:${jwtVersion}"
     implementation "org.mapstruct:mapstruct:${mapstruct}"
@@ -72,14 +72,13 @@ openApi {
 */
 
 def openApiDir = file("$rootDir/openapi")
+def outRoot = layout.buildDirectory.dir("generated-openapi")
 
 def foundSpecifications = openApiDir.listFiles({ f ->
     f.name.endsWith('.yaml') || f.name.endsWith('.yml')
 } as FileFilter) ?: []
 
 logger.lifecycle("Found ${foundSpecifications.size()} specifications: " + foundSpecifications.collect { it.name }.join(', '))
-
-def outRoot = layout.buildDirectory.dir("generated")
 
 def generateTasks = foundSpecifications.collect { specFile ->
     def specName = specFile.name.replaceAll(/\.[^.]+$/, '')
@@ -98,7 +97,9 @@ def generateTasks = foundSpecifications.collect { specFile ->
 
         def base = "com.example.apicountries.${specName.split('-')[0].toLowerCase()}"
         configOptions.set([
-                library             : "spring-cloud",
+                library             : "spring-boot",
+                interfaceOnly       : "true",
+                useJakartaEe        : "true",
                 skipDefaultInterface: "true",
                 useBeanValidation   : "true",
                 openApiNullable     : "false",
