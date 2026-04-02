@@ -76,107 +76,6 @@ services:
     networks:
       - app-network
 
-  api-countries:
-    build:
-      context: ./api-countries
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
-    environment:
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_URL}
-      KAFKA_URL: ${KAFKA_URL}
-      COUNTRY_URL: ${COUNTRY_URL}
-
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-
-      MONGO_HOST: ${MONGO_HOST}
-      MONGO_PORT: ${MONGO_PORT}
-      MONGO_DB: ${MONGO_DB}
-
-      REDIS_URL: ${REDIS_URL}
-      REDIS_PORT: ${REDIS_PORT}
-
-      log_path: /usr/app/logs/application.log
-
-    volumes:
-      - logs:/usr/app/logs
-
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "50m"
-        max-file: "4"
-    labels:
-      - "com.centurylinklabs.watchtower.enable=true"
-
-    depends_on:
-      mongo:
-        condition: service_healthy
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_started
-      redis-insight:
-        condition: service_started
-      broker1:
-        condition: service_healthy
-      broker2:
-        condition: service_healthy
-      broker3:
-        condition: service_healthy
-
-    networks:
-      - app-network
-
-  api-consumer:
-    build:
-      context: ./api-consumer
-      dockerfile: Dockerfile
-    ports:
-      - "8082:8082"
-    environment:
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_URL}
-      KAFKA_URL: ${KAFKA_URL}
-
-    labels:
-      - "com.centurylinklabs.watchtower.enable=true"
-
-    depends_on:
-      api-countries:
-        condition: service_started
-      broker1:
-        condition: service_healthy
-      broker2:
-        condition: service_healthy
-      broker3:
-        condition: service_healthy
-
-    networks:
-      - app-network
-
-  api-gateway:
-    build:
-      context: ./api-gateway
-      dockerfile: Dockerfile
-    ports:
-      - "8091:8091"
-
-    environment:
-      COUNTRY_SERVICE_URL: ${COUNTRY_SERVICE_URL}
-      CONSUMER_SERVICE_URL: ${CONSUMER_SERVICE_URL}
-
-    labels:
-      - "com.centurylinklabs.watchtower.enable=true"
-
-    depends_on:
-      api-countries:
-        condition: service_started
-
-    networks:
-      - app-network
-
   nexus:
     image: sonatype/nexus3:3.76.0
     platform: linux/amd64
@@ -408,6 +307,107 @@ services:
       - app-network
 
     depends_on: [ broker1, broker2, broker3 ]
+
+  api-countries:
+    build:
+      context: ./api-countries
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_URL}
+      KAFKA_URL: ${KAFKA_URL}
+      COUNTRY_URL: ${COUNTRY_URL}
+
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+      MONGO_HOST: ${MONGO_HOST}
+      MONGO_PORT: ${MONGO_PORT}
+      MONGO_DB: ${MONGO_DB}
+
+      REDIS_URL: ${REDIS_URL}
+      REDIS_PORT: ${REDIS_PORT}
+
+      log_path: /usr/app/logs/application.log
+
+    volumes:
+      - logs:/usr/app/logs
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "4"
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+    depends_on:
+      mongo:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      redis-insight:
+        condition: service_started
+      broker1:
+        condition: service_healthy
+      broker2:
+        condition: service_healthy
+      broker3:
+        condition: service_healthy
+
+    networks:
+      - app-network
+
+  api-consumer:
+    build:
+      context: ./api-consumer
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_URL}
+      KAFKA_URL: ${KAFKA_URL}
+
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+    depends_on:
+      api-countries:
+        condition: service_started
+      broker1:
+        condition: service_healthy
+      broker2:
+        condition: service_healthy
+      broker3:
+        condition: service_healthy
+
+    networks:
+      - app-network
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8091:8091"
+
+    environment:
+      COUNTRY_SERVICE_URL: ${COUNTRY_SERVICE_URL}
+      CONSUMER_SERVICE_URL: ${CONSUMER_SERVICE_URL}
+
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+    depends_on:
+      api-countries:
+        condition: service_started
+
+    networks:
+      - app-network
 
 networks:
   app-network:

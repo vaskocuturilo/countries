@@ -51,3 +51,15 @@ security:
 http:
   auth-token-header-name: X-API-KEY
   auth-token: test123
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+
+
+
+
