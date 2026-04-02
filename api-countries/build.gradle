@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version "${springBootVersion}"
     id 'io.spring.dependency-management' version "${dependencyManagementVersion}"
+    id 'org.springdoc.openapi-gradle-plugin' version "${openapiPlugin}"
 }
 
 group = 'com.example'
@@ -25,6 +26,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${openapi}"
     implementation 'org.springframework.kafka:spring-kafka'
     implementation "com.auth0:java-jwt:${jwtVersion}"
     implementation "org.mapstruct:mapstruct:${mapstruct}"
@@ -48,4 +50,16 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+openApi {
+    apiDocsUrl.set("http://localhost:8080/v3/api-docs.yaml")
+    outputDir.set(file("openapi"))
+    outputFileName.set("api-countries.yaml")
+    waitTimeInSeconds.set(30)
+
+    customBootRun {
+        args.add("--spring.profiles.active=dev")
+        jvmArgs.add("-Dhttp.auth-token=your-dev-api-key")
+    }
 }

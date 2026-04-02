@@ -1,0 +1,265 @@
+openapi: 3.1.0
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- url: http://localhost:8080
+  description: Generated server url
+tags:
+- name: CountryApi
+  description: Country management
+paths:
+  /api/v1/users/register:
+    post:
+      tags:
+      - user-rest-controller-v-1
+      operationId: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignUpDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserDto"
+  /api/v1/users/login:
+    post:
+      tags:
+      - user-rest-controller-v-1
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CredentialsDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserDto"
+  /api/v1/users/active:
+    post:
+      tags:
+      - user-rest-controller-v-1
+      operationId: active
+      parameters:
+      - name: userId
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: code
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserActiveDto"
+  /api/v1/countries/send:
+    post:
+      tags:
+      - CountryApi
+      summary: Send country to Kafka
+      operationId: sendCountryEntityData
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CountryDto"
+        required: true
+      responses:
+        "200":
+          description: Success send
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+        "500":
+          description: Error send
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+  /api/v1/countries/process:
+    post:
+      tags:
+      - CountryApi
+      summary: Get all countries from external resource
+      operationId: initProcess
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+  /api/v1/countries:
+    get:
+      tags:
+      - CountryApi
+      summary: Get all countries
+      operationId: getCountries
+      responses:
+        "200":
+          description: Country found
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CountryDto"
+        "204":
+          description: Empty country list
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CountryDto"
+  /api/v1/countries/{alphaCode}:
+    get:
+      tags:
+      - CountryApi
+      summary: Get country by alphaCode
+      operationId: getCountryByAlphaCode
+      parameters:
+      - name: alphaCode
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Country found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CountryDto"
+        "404":
+          description: Country not found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CountryDto"
+components:
+  schemas:
+    SignUpDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        login:
+          type: string
+        password:
+          type: array
+          items:
+            type: string
+    ApiKeyEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        apiKey:
+          type: string
+        expires:
+          type: string
+          format: date-time
+    OneTimePasswordEntity:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        oneTimePasswordCode:
+          type: integer
+          format: int32
+        expires:
+          type: string
+          format: date-time
+    UserDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        firstName:
+          type: string
+        lastName:
+          type: string
+        login:
+          type: string
+        token:
+          type: string
+        active:
+          type: boolean
+        oneTimePassword:
+          $ref: "#/components/schemas/OneTimePasswordEntity"
+        apiKey:
+          $ref: "#/components/schemas/ApiKeyEntity"
+    CredentialsDto:
+      type: object
+      properties:
+        login:
+          type: string
+        password:
+          type: array
+          items:
+            type: string
+    UserActiveDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        login:
+          type: string
+        active:
+          type: boolean
+    CountryDto:
+      type: object
+      properties:
+        capital:
+          type: array
+          items:
+            type: string
+        region:
+          type: string
+        subregion:
+          type: string
+        area:
+          type: integer
+          format: int32
+        population:
+          type: integer
+          format: int32
+        independent:
+          type: boolean
+        cca2:
+          type: string
+        cca3:
+          type: string

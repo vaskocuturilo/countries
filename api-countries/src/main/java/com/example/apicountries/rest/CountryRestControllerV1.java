@@ -2,6 +2,9 @@ package com.example.apicountries.rest;
 
 import com.example.apicountries.dto.CountryDto;
 import com.example.apicountries.service.CountryServiceImplementation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +19,7 @@ import java.util.concurrent.TimeoutException;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/countries")
+@Tag(name = "CountryApi", description = "Country management")
 public class CountryRestControllerV1 {
 
     private final CountryServiceImplementation countryService;
@@ -25,21 +29,31 @@ public class CountryRestControllerV1 {
     }
 
     @PostMapping("/process")
+    @Operation(summary = "Get all countries from external resource")
     public ResponseEntity<Map<String, String>> initProcess() {
         return ResponseEntity.ok(countryService.initProcess());
     }
 
     @GetMapping("/{alphaCode}")
+    @Operation(summary = "Get country by alphaCode")
+    @ApiResponse(responseCode = "200", description = "Country found")
+    @ApiResponse(responseCode = "404", description = "Country not found")
     public ResponseEntity<CountryDto> getCountryByAlphaCode(@PathVariable("alphaCode") String alphaCode) {
         return ResponseEntity.ok(countryService.getCountryByAlphaCode(alphaCode));
     }
 
     @GetMapping
+    @Operation(summary = "Get all countries")
+    @ApiResponse(responseCode = "200", description = "Country found")
+    @ApiResponse(responseCode = "204", description = "Empty country list")
     public ResponseEntity<List<CountryDto>> getCountries() {
         return ResponseEntity.ok(countryService.getAllCountries());
     }
 
     @PostMapping("/send")
+    @Operation(summary = "Send country to Kafka")
+    @ApiResponse(responseCode = "200", description = "Success send")
+    @ApiResponse(responseCode = "500", description = "Error send")
     public ResponseEntity<Map<String, String>> sendCountryEntityData(@RequestBody final CountryDto country) {
         try {
             countryService.triggerSend(country).get(5, TimeUnit.SECONDS);
