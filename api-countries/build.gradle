@@ -61,7 +61,6 @@ openApi {
 
     customBootRun {
         args.add("--spring.profiles.active=dev")
-        jvmArgs.add("-Dhttp.auth-token=your-dev-api-key")
     }
 }
 
