@@ -88,4 +88,8 @@ jobs:
           MONGO_PORT: ${{ secrets.MONGO_PORT }}
           MONGO_DB: ${{ secrets.MONGO_DB }}
 
+          NEXUS_URL: ${{ secrets.NEXUS_URL }}
+          NEXUS_USER: ${{ secrets.NEXUS_USER }}
+          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+
         run: gradle clean build test
