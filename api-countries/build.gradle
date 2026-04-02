@@ -1,8 +1,12 @@
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
 plugins {
     id 'java'
+    id 'idea'
     id 'org.springframework.boot' version "${springBootVersion}"
     id 'io.spring.dependency-management' version "${dependencyManagementVersion}"
     id 'org.springdoc.openapi-gradle-plugin' version "${openapiPlugin}"
+    id 'org.openapi.generator' version "${openapiGenerator}"
 }
 
 group = 'com.example'
@@ -15,10 +19,6 @@ java {
     }
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -27,6 +27,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${openapi}"
+    implementation 'io.swagger.core.v3:swagger-annotations'
     implementation 'org.springframework.kafka:spring-kafka'
     implementation "com.auth0:java-jwt:${jwtVersion}"
     implementation "org.mapstruct:mapstruct:${mapstruct}"
@@ -61,5 +62,123 @@ openApi {
     customBootRun {
         args.add("--spring.profiles.active=dev")
         jvmArgs.add("-Dhttp.auth-token=your-dev-api-key")
+    }
+}
+
+/*
+──────────────────────────────────────────────────────
+============== Open API generation =========
+──────────────────────────────────────────────────────
+*/
+
+def openApiDir = file("$rootDir/openapi")
+
+def foundSpecifications = openApiDir.listFiles({ f ->
+    f.name.endsWith('.yaml') || f.name.endsWith('.yml')
+} as FileFilter) ?: []
+
+logger.lifecycle("Found ${foundSpecifications.size()} specifications: " + foundSpecifications.collect { it.name }.join(', '))
+
+def outRoot = layout.buildDirectory.dir("generated")
+
+def generateTasks = foundSpecifications.collect { specFile ->
+    def specName = specFile.name.replaceAll(/\.[^.]+$/, '')
+
+    def taskName = "generate" + specName
+            .split(/[^A-Za-z0-9]/)
+            .findAll { it }
+            .collect { it.capitalize() }
+            .join('')
+
+    tasks.register(taskName, GenerateTask) {
+        generatorName.set("spring")
+        inputSpec.set(specFile.absolutePath)
+
+        outputDir.set(outRoot.get().asFile.absolutePath)
+
+        def base = "com.example.apicountries.${specName.split('-')[0].toLowerCase()}"
+        configOptions.set([
+                library             : "spring-cloud",
+                skipDefaultInterface: "true",
+                useBeanValidation   : "true",
+                openApiNullable     : "false",
+                useFeignClientUrl   : "true",
+                useTags             : "true",
+                apiPackage          : "${base}.api",
+                modelPackage        : "${base}.dto",
+                configPackage       : "${base}.config"
+        ])
+        doFirst {
+            logger.lifecycle("${taskName}: starting generation from ${specFile.name}")
+        }
+    }
+}
+
+def generateAllOpenApi = tasks.register("generateAllOpenApi") {
+    dependsOn(generateTasks)
+    doLast { logger.lifecycle("generateAllOpenApi: all specifications have been generated") }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir outRoot.map { it.dir("src/main/java") }
+        }
+    }
+}
+
+tasks.named("compileJava") {
+    dependsOn(generateAllOpenApi)
+}
+
+idea {
+    module {
+        def genDir = outRoot.map { it.dir("src/main/java").asFile }.get()
+        generatedSourceDirs += genDir
+        sourceDirs += genDir
+    }
+}
+
+
+/*
+──────────────────────────────────────────────────────
+============== NEXUS =============
+──────────────────────────────────────────────────────
+*/
+
+def envFile = new File("../.env")
+
+if (envFile.exists()) {
+    envFile.readLines().each { line ->
+        if (line.trim() && line.contains('=') && !line.startsWith('#')) {
+            def (k, v) = line.split('=', 2)
+            System.setProperty(k.trim(), v.trim())
+            logger.lifecycle("${k.trim()}=${v.trim()}")
+        }
+    }
+}
+
+def nexusUrl = System.getenv("NEXUS_URL") ?: System.getProperty("NEXUS_URL")
+def nexusUser = System.getenv("NEXUS_USERNAME") ?: System.getProperty("NEXUS_USERNAME")
+def nexusPassword = System.getenv("NEXUS_PASSWORD") ?: System.getProperty("NEXUS_PASSWORD")
+
+if (!nexusUrl || !nexusUser || !nexusPassword) {
+    throw new GradleException(
+            "NEXUS_URL or NEXUS_USER or NEXUS_PASSWORD not set. " +
+                    "Please create a .env file with these properties or set environment variables."
+    )
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url = uri(nexusUrl)
+        allowInsecureProtocol = true
+        if (nexusUrl.startsWith("http")) {
+            credentials {
+                username = nexusUser
+                password = nexusPassword
+            }
+        }
     }
 }
