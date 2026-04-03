@@ -3,6 +3,7 @@ import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 plugins {
     id 'java'
     id 'idea'
+    id 'maven-publish'
     id 'org.springframework.boot' version "${springBootVersion}"
     id 'io.spring.dependency-management' version "${dependencyManagementVersion}"
     id 'org.springdoc.openapi-gradle-plugin' version "${openapiPlugin}"
@@ -126,14 +127,19 @@ def openApiDir = layout.projectDirectory.dir("openapi")
 
 def outRoot = layout.buildDirectory.dir("generated/openapi")
 
-fileTree(openApiDir).matching { include "**/*.yaml", "**/*.yml" }.each { specFile ->
+def foundSpecifications = fileTree(openApiDir).matching {
+    include "**/*.yaml", "**/*.yml"
+}
+
+foundSpecifications.each { specFile ->
     def specName = specFile.name.replaceAll(/\.(yaml|yml)$/, '')
-    def taskName = "generate${specName.split(/[^A-Za-z0-9]/).collect { it.capitalize() }.join('')}"
+    def subPackage = specName.replaceAll(/[^A-Za-z0-9]/, '').toLowerCase()
+    def taskName = "generate${specName.split(/[^A-Za-z0-9]/).collect { it.capitalize() }.join('')}Api"
 
     tasks.register(taskName, GenerateTask) {
         generatorName.set("spring")
         inputSpec.set(specFile.absolutePath)
-        outputDir.set(outRoot.map { it.asFile.absolutePath })
+        outputDir.set(outRoot.map { it.dir(subPackage).asFile.absolutePath })
 
         def basePkg = "com.example.apicountries.${specName.replaceAll(/[^A-Za-z0-9]/, '').toLowerCase()}"
 
@@ -153,6 +159,56 @@ fileTree(openApiDir).matching { include "**/*.yaml", "**/*.yml" }.each { specFil
     }
 }
 
+def apiJars = foundSpecifications.collect { specFile ->
+    def specName = specFile.name.replaceAll(/\.(yaml|yml)$/, '')
+    def cleanName = specName.replaceAll(/[^A-Za-z0-9]/, '').toLowerCase()
+    def generateTaskName = "generate${specName.split(/[^A-Za-z0-9]/).collect { it.capitalize() }.join('')}Api"
+
+    def apiSourceSet = sourceSets.create(cleanName) {
+        java {
+            srcDir outRoot.map { it.dir("${cleanName}/src/main/java") }
+        }
+        compileClasspath += sourceSets.main.compileClasspath
+        runtimeClasspath += sourceSets.main.runtimeClasspath
+    }
+
+    tasks.named("compile${cleanName.capitalize()}Java") {
+        dependsOn(generateTaskName)
+    }
+
+    return tasks.register("${cleanName}Jar", Jar) {
+        group = "build"
+        archiveBaseName.set(specName)
+        archiveClassifier.set("api")
+        from apiSourceSet.output
+        dependsOn(generateTaskName)
+    }
+}
+
+publishing {
+    publications {
+        foundSpecifications.each { specFile ->
+            def specName = specFile.name.replaceAll(/\.(yaml|yml)$/, '')
+            def cleanName = specName.replaceAll(/[^A-Za-z0-9]/, '').toLowerCase()
+
+            def jarTaskName = "${cleanName}Jar"
+
+            register("${cleanName}Publication", MavenPublication) {
+                artifact tasks.named(jarTaskName)
+
+                groupId = 'com.example.apicountries'
+                artifactId = specName
+                version = '1.0.0'
+
+                pom {
+                    name = "Generated API ${specName}"
+                    description = "OpenAPI generated code for ${specName}"
+                }
+            }
+        }
+    }
+}
+
 def generateAllOpenApi = tasks.register("generateAllOpenApi") {
     group = "openapi"
     dependsOn tasks.withType(GenerateTask)
@@ -168,6 +224,10 @@ sourceSets {
 
 tasks.named("compileJava") {
     dependsOn(generateAllOpenApi)
+}
+
+tasks.named("build") {
+    dependsOn apiJars
 }
 
 idea {
