@@ -135,7 +135,7 @@ fileTree(openApiDir).matching { include "**/*.yaml", "**/*.yml" }.each { specFil
         inputSpec.set(specFile.absolutePath)
         outputDir.set(outRoot.map { it.asFile.absolutePath })
 
-        def basePkg = "com.example.${specName.replaceAll(/[^A-Za-z0-9]/, '').toLowerCase()}"
+        def basePkg = "com.example.apicountries.${specName.replaceAll(/[^A-Za-z0-9]/, '').toLowerCase()}"
 
         configOptions.set([
                 library             : "spring-boot",
