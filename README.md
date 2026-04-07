@@ -1,4 +1,4 @@
-##   
+##     
 
 The demo countries project.
 
@@ -10,7 +10,7 @@ It should cover best practices, microservice patterns, scalability, observabilit
 
 - Use any *object-oriented language*.
 - Use the latest stable Spring Boot version.
-- Use the latest stable PostgreSQL database version.
+- Use the latest stable PostgresSQL database version.
 - Use the latest stable MongoDB database version.
 - Use the latest OpenAPI.
 
@@ -45,6 +45,8 @@ You will need the following technologies available to try it out:
 * Grafana
 * Loki
 * Alloy
+* Nexus
+* OpenAPI
 * Tempo
 * Watchtower
 * IDE of your choice
