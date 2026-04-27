@@ -2,6 +2,7 @@ package com.example.apicountries.rest;
 
 import com.example.apicountries.config.SecurityConfig;
 import com.example.apicountries.dto.CountryDto;
+import com.example.apicountries.dto.PageResponse;
 import com.example.apicountries.service.CountryServiceImplementation;
 import com.example.apicountries.utils.DataUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.test.context.ActiveProfiles;
@@ -22,7 +24,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -123,9 +124,18 @@ class CountryRestControllerV1Tests {
     @Test
     @DisplayName("Test get all countries functionality")
     void givenOneCountry_whenGetByAllCountries_thenSuccessResponse() throws Exception {
+        PageResponse<CountryDto> response = new PageResponse<>(
+                List.of(
+                        DataUtils.getTuvValueDtoPersisted()),
+                0,
+                10,
+                3,
+                1,
+                "alpha2",
+                "ASC");
         //given
-        BDDMockito.given(countryService.getAllCountries())
-                .willReturn(List.of(DataUtils.getTuvValueDtoPersisted()));
+        BDDMockito.given(countryService.getAllCountries(any(Pageable.class)))
+                .willReturn(response);
 
         //when
         final ResultActions result = mockMvc.perform(get(ENDPOINT_PATH)
@@ -134,15 +144,24 @@ class CountryRestControllerV1Tests {
         //then
         result.andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].cca2").isNotEmpty())
-                .andExpect(jsonPath("$[*]", hasSize(1)));
+                .andExpect(jsonPath("$.content.[0].cca2").isNotEmpty())
+                .andExpect(jsonPath("$.content", hasSize(1)));
     }
 
     @Test
     @DisplayName("Test get all countries functionality if empty list")
     void givenNoCountries_whenGetByAllCountries_thenEmptyListResponse() throws Exception {
         //given
-        BDDMockito.given(countryService.getAllCountries()).willReturn(Collections.emptyList());
+        final PageResponse<CountryDto> response = new PageResponse<>(
+                List.of(),
+                0,
+                10,
+                3,
+                1,
+                "alpha2",
+                "ASC");
+
+        BDDMockito.given(countryService.getAllCountries(any(Pageable.class))).willReturn(response);
 
         //when
         final ResultActions result = mockMvc.perform(get(ENDPOINT_PATH)
@@ -151,7 +170,7 @@ class CountryRestControllerV1Tests {
         //then
         result.andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[*]", hasSize(0)));
+                .andExpect(jsonPath("$.content", hasSize(0)));
     }
 
     @Test

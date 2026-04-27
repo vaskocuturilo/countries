@@ -1,17 +1,21 @@
 package com.example.apicountries.rest;
 
 import com.example.apicountries.dto.CountryDto;
+import com.example.apicountries.dto.PageResponse;
 import com.example.apicountries.service.CountryServiceImplementation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -23,6 +27,17 @@ import java.util.concurrent.TimeoutException;
 public class CountryRestControllerV1 {
 
     private final CountryServiceImplementation countryService;
+
+    private static final Set<String> ALLOWED_SORT_FIELDS = Set.of(
+            "alpha2",
+            "alpha3",
+            "capital",
+            "region",
+            "subregion",
+            "area",
+            "population",
+            "independent"
+    );
 
     public CountryRestControllerV1(CountryServiceImplementation countryService) {
         this.countryService = countryService;
@@ -46,8 +61,28 @@ public class CountryRestControllerV1 {
     @Operation(summary = "Get all countries")
     @ApiResponse(responseCode = "200", description = "Country found")
     @ApiResponse(responseCode = "204", description = "Empty country list")
-    public ResponseEntity<List<CountryDto>> getCountries() {
-        return ResponseEntity.ok(countryService.getAllCountries());
+    public ResponseEntity<PageResponse<CountryDto>> getCountries(@RequestParam(defaultValue = "0") int page,
+                                                                 @RequestParam(defaultValue = "10") int size,
+                                                                 @RequestParam(defaultValue = "alpha2") String sortBy,
+                                                                 @RequestParam(defaultValue = "asc") String direction) {
+
+        final int safePage = Math.max(page, 0);
+
+        final int safeSize = Math.clamp(size, 1, 100);
+
+        String safeSortBy = ALLOWED_SORT_FIELDS.contains(sortBy) ? sortBy : "alpha2";
+
+        final Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(safeSortBy).descending()
+                : Sort.by(safeSortBy).ascending();
+
+        final Pageable pageable = PageRequest.of(safePage, safeSize, sort);
+
+        log.debug("Get All events page={}, size={}, sortBy={}, direction={}",
+                page, size, sortBy, direction);
+
+
+        return ResponseEntity.ok(countryService.getAllCountries(pageable));
     }
 
     @PostMapping("/send")
