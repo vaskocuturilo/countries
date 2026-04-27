@@ -2,6 +2,7 @@ package com.example.apicountries.service;
 
 import com.example.apicountries.client.CountryApiClient;
 import com.example.apicountries.dto.CountryDto;
+import com.example.apicountries.dto.PageResponse;
 import com.example.apicountries.entity.CountryDocument;
 import com.example.apicountries.entity.CountryEntity;
 import com.example.apicountries.kafka.producer.KafkaProducerService;
@@ -11,11 +12,16 @@ import com.example.apicountries.repository.CountryJpaRepository;
 import com.example.apicountries.repository.CountryMongoRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
@@ -70,14 +76,17 @@ public class CountryServiceImplementation implements ICountryService {
         }
     }
 
-    public List<CountryDto> getAllCountries() {
-        final List<CountryEntity> countryEntities = countryJpaRepository.findAll();
+    public PageResponse<CountryDto> getAllCountries(final Pageable pageable) {
+        Page<CountryEntity> countries = countryJpaRepository.findAll(pageable);
 
-        if (CollectionUtils.isEmpty(countryEntities)) {
-            return Collections.emptyList();
-        }
+        final Page<CountryDto> countryDtos = countries.map(CountryDto::fromJpaEntity);
 
-        return countryEntities.stream().map(CountryDto::fromJpaEntity).toList();
+        return new PageResponse<>
+                (countryDtos.getContent(),
+                        countryDtos.getNumber(),
+                        countryDtos.getSize(),
+                        countryDtos.getTotalElements(),
+                        countryDtos.getTotalPages(), resolveSortBy(pageable), resolveDirection(pageable));
     }
 
     public CountryDto getCountryByAlphaCode(final String alphaCode) {
@@ -180,5 +189,21 @@ public class CountryServiceImplementation implements ICountryService {
         }
 
         return normalized;
+    }
+
+    private String resolveSortBy(Pageable pageable) {
+        return pageable.getSort().stream()
+                .findFirst()
+                .map(Sort.Order::getProperty)
+                .orElse("unsorted");
+
+    }
+
+    private String resolveDirection(Pageable pageable) {
+        return pageable.getSort().stream()
+                .findFirst()
+                .map(order -> order.getDirection().name())
+                .orElse("ASC");
+
     }
 }

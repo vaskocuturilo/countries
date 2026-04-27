@@ -2,6 +2,7 @@ package com.example.apicountries.service;
 
 import com.example.apicountries.client.CountryApiClient;
 import com.example.apicountries.dto.CountryDto;
+import com.example.apicountries.dto.PageResponse;
 import com.example.apicountries.entity.CountryEntity;
 import com.example.apicountries.redis.service.CountryDocumentCacheService;
 import com.example.apicountries.redis.service.CountryEntityCacheService;
@@ -15,7 +16,7 @@ import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.util.CollectionUtils;
+import org.springframework.data.domain.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -55,26 +56,40 @@ class CountryServiceTests {
 
         final List<CountryEntity> countriesList = List.of(countryEntity);
 
-        BDDMockito.given(countryRepository.findAll()).willReturn(countriesList);
+        final Pageable pageable = PageRequest.of(0, 10, Sort.by("alpha2").ascending());
+        final Page<CountryEntity> countryPage = new PageImpl<>(countriesList, pageable, countriesList.size());
+
+        BDDMockito.given(countryRepository.findAll(pageable)).willReturn(countryPage);
         //when
-        final List<CountryDto> allCountries = countryService.getAllCountries();
+        final PageResponse<CountryDto> result = countryService.getAllCountries(pageable);
 
         //then
-        assertThat(CollectionUtils.isEmpty(countriesList)).isFalse();
-        assertThat(allCountries).hasSize(1);
+        assertThat(result).isNotNull();
+        assertThat(result.content()).hasSize(1);
+        assertThat(result.page()).isZero();
+        assertThat(result.size()).isEqualTo(10);
+        assertThat(result.totalElements()).isEqualTo(1);
+        assertThat(result.totalPages()).isEqualTo(1);
+        assertThat(result.sortBy()).isEqualTo("alpha2");
+        assertThat(result.direction()).isEqualTo("ASC");
     }
 
     @Test
     @DisplayName("Test getAllCountries returns empty list when no countries exist")
     void givenNoCountries_whenGetAllCountries_thenEmptyListReturned() {
         // given
-        BDDMockito.given(countryRepository.findAll()).willReturn(Collections.emptyList());
+        final List<CountryEntity> countriesList = List.of();
+
+        final Pageable pageable = PageRequest.of(0, 1, Sort.by("alpha2").ascending());
+        final Page<CountryEntity> countryPage = new PageImpl<>(countriesList,pageable,0);
+
+        BDDMockito.given(countryRepository.findAll(pageable)).willReturn(countryPage);
 
         // when
-        final List<CountryDto> result = countryService.getAllCountries();
+        final PageResponse<CountryDto> result = countryService.getAllCountries(pageable);
 
         // then
-        assertThat(result).isEmpty();
+        assertThat(result.content()).isEmpty();
     }
 
     @Test

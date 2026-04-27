@@ -26,7 +26,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
 
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -158,10 +158,15 @@ class ItCountryRestControllerV1Tests extends AbstractRestControllerBaseTest {
         // then
         result.andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(jsonPath("$[*]", hasSize(1)))
-                .andExpect(jsonPath("$[0].cca2").isNotEmpty())
-                .andExpect(jsonPath("$[0].cca3", CoreMatchers.notNullValue()))
-                .andExpect(jsonPath("$[0].capital", CoreMatchers.notNullValue()));
+                .andExpect(jsonPath("$.content", hasSize(1)))
+                .andExpect(jsonPath("$.content[0].cca2").isNotEmpty())
+                .andExpect(jsonPath("$.content[0].cca3").isNotEmpty())
+                .andExpect(jsonPath("$.content[0].capital").isNotEmpty())
+
+                .andExpect(jsonPath("$.content[0].cca2", equalTo("TU")))
+                .andExpect(jsonPath("$.content[0].capital", equalTo(List.of("Funafuti"))))
+                .andExpect(jsonPath("$.page", equalTo(0)))
+                .andExpect(jsonPath("$.size", equalTo(10)));
     }
 
     @Test
@@ -177,7 +182,7 @@ class ItCountryRestControllerV1Tests extends AbstractRestControllerBaseTest {
         // then
         result.andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(jsonPath("$[*]", hasSize(0)));
+                .andExpect(jsonPath("$.content", hasSize(0)));
     }
 
     @Test
@@ -197,7 +202,7 @@ class ItCountryRestControllerV1Tests extends AbstractRestControllerBaseTest {
         // then
         result.andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(jsonPath("$[*]", hasSize(2)));
+                .andExpect(jsonPath("$.content", hasSize(2)));
     }
 
     @Test
