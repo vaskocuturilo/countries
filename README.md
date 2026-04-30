@@ -10,7 +10,7 @@ It should cover best practices, microservice patterns, scalability, observabilit
 
 - Use any *object-oriented language*.
 - Use the latest stable Spring Boot version.
-- Use the latest stable PostgresSQL database version.
+- Use the latest stable PostgreSQL database version.
 - Use the latest stable MongoDB database version.
 - Use the latest OpenAPI.
 
@@ -77,7 +77,7 @@ Countries: https://restcountries.com/v3.1/all?fields=cca2,cca3,capital,region,su
 make *
 
 *
-    - u can use one of this command: all, up, start, stop, clean, logs, rebuild, infra, infra-logs, infra-stop
+    - u can use one of these commands: all, up, start, stop, clean, logs, rebuild, infra, infra-logs, infra-stop
 
 ### How it looks:
 
