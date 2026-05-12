@@ -1,5 +1,6 @@
 package com.example.apicountries.config;
 
+import com.example.apicountries.config.path.SecurityConstants;
 import com.example.apicountries.filter.APIKeyAuthFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -22,22 +23,15 @@ import java.util.Collections;
 public class SecurityConfig {
     private final String principalRequestHeader;
     private final String principalRequestValue;
+    private final JwtAuthFilter jwtAuthFilter;
 
-    private static final String[] PUBLIC_ROUTES = {
-            "/api/v1/users/login",
-            "/api/v1/users/register",
-            "/api/v1/users/active",
-            "/v3/api-docs/**",
-            "/v3/api-docs.yaml",
-            "/swagger-ui/**",
-            "/swagger-ui.html"
-    };
 
     public SecurityConfig(
             @Value("${http.auth-token-header-name}") String principalRequestHeader,
-            @Value("${http.auth-token}") String principalRequestValue) {
+            @Value("${http.auth-token}") String principalRequestValue, JwtAuthFilter jwtAuthFilter) {
         this.principalRequestHeader = principalRequestHeader;
         this.principalRequestValue = principalRequestValue;
+        this.jwtAuthFilter = jwtAuthFilter;
     }
 
     @Bean
@@ -47,11 +41,12 @@ public class SecurityConfig {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(PUBLIC_ROUTES).permitAll()
+                        .requestMatchers(SecurityConstants.PUBLIC_ROUTES).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(jwtAuthFilter, APIKeyAuthFilter.class);
 
         return http.build();
     }

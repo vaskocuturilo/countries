@@ -1,21 +1,15 @@
 package com.example.apicountries.config;
 
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.apicountries.dto.UserDto;
 import com.example.apicountries.service.UserService;
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
-
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.util.Base64;
-import java.util.Collections;
 import java.util.Date;
 
 @Data
@@ -48,33 +42,11 @@ public class UserAuthenticationProvider {
                 .sign(algorithm);
     }
 
-    public Authentication validateToken(String token) {
-        Algorithm algorithm = Algorithm.HMAC256(secretKey);
-
-        JWTVerifier verifier = JWT.require(algorithm)
-                .build();
-
-        DecodedJWT decoded = verifier.verify(token);
-
-        UserDto user = UserDto.builder()
-                .login(decoded.getSubject())
-                .firstName(decoded.getClaim("firstName").asString())
-                .lastName(decoded.getClaim("lastName").asString())
-                .build();
-
-        return new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
-    }
-
-    public Authentication validateTokenStrongly(String token) {
-        Algorithm algorithm = Algorithm.HMAC256(secretKey);
-
-        JWTVerifier verifier = JWT.require(algorithm)
-                .build();
-
-        DecodedJWT decoded = verifier.verify(token);
-
-        UserDto user = userService.findByLogin(decoded.getSubject());
-
-        return new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
+    public String extractEmail(String token) {
+        final Algorithm algorithm = Algorithm.HMAC256(secretKey);
+        return JWT.require(algorithm)
+                .build()
+                .verify(token)
+                .getSubject();
     }
 }
