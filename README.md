@@ -19,6 +19,12 @@ It should cover best practices, microservice patterns, scalability, observabilit
 - Create a REST API service.
 - Create the other REST service with Kafka consumer support.
 - Create an API Gateway with an async approach.
+- Create a REST API security service (/auth/register/ auth/login /auth/refresh /auth/logout /counties(GET|POST|PUT|DELETE)).
+- Add TTL(access token - 5 minutes, refresh token - 7 days).
+- Use secret from env.
+- The refresh token should be saved to the database.
+- Add Logout functionality.
+- Add Role-based functionality.
 - Add Apache Kafka.
 - Add Kafka UI.
 - Add Cash (Redis).
