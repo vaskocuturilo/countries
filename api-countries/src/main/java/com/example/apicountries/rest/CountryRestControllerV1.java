@@ -1,5 +1,6 @@
 package com.example.apicountries.rest;
 
+import com.example.apicountries.annotation.RateLimiter;
 import com.example.apicountries.dto.CountryDto;
 import com.example.apicountries.dto.PageResponse;
 import com.example.apicountries.service.CountryServiceImplementation;
@@ -45,6 +46,7 @@ public class CountryRestControllerV1 {
 
     @PostMapping("/process")
     @Operation(summary = "Get all countries from external resource")
+    @RateLimiter(key = "process")
     public ResponseEntity<Map<String, String>> initProcess() {
         return ResponseEntity.ok(countryService.initProcess());
     }
@@ -89,6 +91,7 @@ public class CountryRestControllerV1 {
     @Operation(summary = "Send country to Kafka")
     @ApiResponse(responseCode = "200", description = "Success send")
     @ApiResponse(responseCode = "500", description = "Error send")
+    @RateLimiter(key = "send country data")
     public ResponseEntity<Map<String, String>> sendCountryEntityData(@RequestBody final CountryDto country) {
         try {
             countryService.triggerSend(country).get(5, TimeUnit.SECONDS);

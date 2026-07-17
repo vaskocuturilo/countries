@@ -1,5 +1,6 @@
 package com.example.apicountries.rest;
 
+import com.example.apicountries.annotation.RateLimiter;
 import com.example.apicountries.config.UserAuthenticationProvider;
 import com.example.apicountries.dto.CredentialsDto;
 import com.example.apicountries.dto.SignUpDto;
@@ -22,6 +23,7 @@ public class UserRestControllerV1 {
     private final UserAuthenticationProvider userAuthenticationProvider;
 
     @PostMapping("/login")
+    @RateLimiter(key = "login")
     public ResponseEntity<UserDto> login(@RequestBody @Valid CredentialsDto credentials) {
         final UserDto userDto = userService.login(credentials);
         userDto.setToken(userAuthenticationProvider.createToken(userDto));
@@ -29,6 +31,7 @@ public class UserRestControllerV1 {
     }
 
     @PostMapping("/register")
+    @RateLimiter(key = "register")
     public ResponseEntity<UserDto> register(@RequestBody @Valid SignUpDto userSignUp) {
         final UserDto createdUser = userService.register(userSignUp);
         createdUser.setToken(userAuthenticationProvider.createToken(createdUser));
@@ -36,6 +39,7 @@ public class UserRestControllerV1 {
     }
 
     @PostMapping("/active")
+    @RateLimiter(key = "active")
     public ResponseEntity<UserActiveDto> active(@RequestParam final Integer userId, @RequestParam final Integer code) {
         final UserActiveDto userActiveDto = userService.active(userId, code);
         return ResponseEntity.ok(userActiveDto);

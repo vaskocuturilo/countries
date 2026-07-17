@@ -81,6 +81,7 @@ dependencies {
     implementation "com.auth0:java-jwt:${jwtVersion}"
     implementation "org.mapstruct:mapstruct:${mapstruct}"
     implementation "jakarta.xml.bind:jakarta.xml.bind-api:${jakartaXmlBindApi}"
+    implementation "com.bucket4j:bucket4j-core:${bucket4jCore}"
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
